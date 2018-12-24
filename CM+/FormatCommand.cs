@@ -90,11 +90,7 @@ namespace CMPlus
             //https://johnkoerner.com/csharp/code%20analysis/roslyn/creating-a-code-fix-that-fixes-comments/
 
             ThreadHelper.ThrowIfNotOnUIThread();
-            ProcessActiveDocument();
-        }
 
-        void ProcessActiveDocument()
-        {
             var document = Global.GetActiveDocument();
 
             if (document != null && document.TryGetSyntaxRoot(out SyntaxNode root))

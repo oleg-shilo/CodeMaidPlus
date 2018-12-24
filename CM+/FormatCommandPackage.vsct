@@ -39,6 +39,11 @@
       <Group guid="guidFormatCommandPackageCmdSet" id="MyMenuGroup" priority="0x0600">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />
       </Group>
+      <Group guid="guidFormatCommandPackageCmdSet" id="MyMenuGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN" />
+        <!--<Parent guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_REFACTORING" />-->
+        <!--<Parent guid="guidSHLMainMenu" id="IDM_VS_CTX_REFACTORING" />-->
+      </Group>
     </Groups>
 
     <!--Buttons section. -->
@@ -56,7 +61,8 @@
         <Parent guid="guidFormatCommandPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>Invoke CodeMaid+.Format</ButtonText>
+          <!--Command: "Tools.InvokeCM+Format" -->
+          <ButtonText>Invoke CM+ Format</ButtonText>
         </Strings>
       </Button>
     </Buttons>
