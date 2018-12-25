@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -93,11 +94,30 @@ namespace CMPlus
                          .ToArray();
         }
 
+        public static int EndLineNumber(this SyntaxToken node)
+            => node.GetLocation().GetLineSpan().EndLinePosition.Line;
+
+        public static SyntaxTrivia ParentStatementWhitespaceTrivia(this SyntaxToken token)
+            => token.ParentStatement().GetLeadingTrivia().LastOrDefault(x => x.IsKind(SyntaxKind.WhitespaceTrivia));
+
+        public static SyntaxNode ParentStatement(this SyntaxToken token)
+        {
+            var result = token.Parent;
+            do
+            {
+                if (result is StatementSyntax)
+                    return result;
+                result = result.Parent;
+            }
+            while (result != null);
+
+            return result;
+        }
+
         public static SyntaxToken RemoveFromLeadingTrivia(this SyntaxToken node, SyntaxTrivia trivia)
-        =>
-            node.WithoutTrivia()
-                .WithLeadingTrivia(node.LeadingTrivia.Remove(trivia))
-                .WithTrailingTrivia(node.TrailingTrivia);
+            => node.WithoutTrivia()
+                   .WithLeadingTrivia(node.LeadingTrivia.Remove(trivia))
+                   .WithTrailingTrivia(node.TrailingTrivia);
 
         public static SyntaxNode WithUsings(this SyntaxNode node, IEnumerable<UsingDirectiveSyntax> usings)
             => (SyntaxNode)(node as CompilationUnitSyntax)?.WithUsings(SyntaxFactory.List(usings)) ??
@@ -117,5 +137,37 @@ namespace CMPlus
         public static bool IsEmpty(this string text) => string.IsNullOrEmpty(text);
 
         public static bool HasNoText(this string text) => string.IsNullOrWhiteSpace(text);
+    }
+
+    static class AttachedProperies
+    {
+        public static ConditionalWeakTable<object, Dictionary<string, object>> ObjectCache
+            = new ConditionalWeakTable<object, Dictionary<string, object>>();
+
+        public static T SetValue<T>(this T obj, string name, object value) where T : class
+        {
+            Dictionary<string, object> properties = ObjectCache.GetOrCreateValue(obj);
+
+            if (properties.ContainsKey(name))
+                properties[name] = value;
+            else
+                properties.Add(name, value);
+
+            return obj;
+        }
+
+        public static T GetValue<T>(this object obj, string name)
+        {
+            Dictionary<string, object> properties;
+            if (ObjectCache.TryGetValue(obj, out properties) && properties.ContainsKey(name))
+                return (T)properties[name];
+            else
+                return default(T);
+        }
+
+        public static object GetValue(this object obj, string name)
+        {
+            return obj.GetValue<object>(name);
+        }
     }
 }
