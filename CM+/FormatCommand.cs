@@ -87,7 +87,7 @@ namespace CMPlus
         void Execute(object sender, EventArgs e)
         {
             // https://stackoverflow.com/questions/21435665/remove-extraneous-semicolons-in-c-sharp-using-roslyn-replace-w-empty-trivia
-            //https://johnkoerner.com/csharp/code%20analysis/roslyn/creating-a-code-fix-that-fixes-comments/
+            // https://johnkoerner.com/csharp/code%20analysis/roslyn/creating-a-code-fix-that-fixes-comments/
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -96,7 +96,8 @@ namespace CMPlus
             if (document != null && document.TryGetSyntaxRoot(out SyntaxNode root))
             {
                 root = root.SortUsings()
-                           .RemoveXmlDocGaps();
+                           .RemoveXmlDocGaps()
+                           .AlignIndents();
 
                 document = document.WithSyntaxRoot(root);
 

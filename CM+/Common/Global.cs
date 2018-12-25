@@ -97,6 +97,9 @@ namespace CMPlus
         public static int EndLineNumber(this SyntaxToken node)
             => node.GetLocation().GetLineSpan().EndLinePosition.Line;
 
+        public static SyntaxTrivia LastWhitespaceTrivia(this SyntaxToken token)
+            => token.LeadingTrivia.LastOrDefault(x => x.IsKind(SyntaxKind.WhitespaceTrivia));
+
         public static SyntaxTrivia ParentStatementWhitespaceTrivia(this SyntaxToken token)
             => token.ParentStatement().GetLeadingTrivia().LastOrDefault(x => x.IsKind(SyntaxKind.WhitespaceTrivia));
 

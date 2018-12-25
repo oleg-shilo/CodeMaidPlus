@@ -32,25 +32,10 @@ namespace CMPlus.Tests
             var root = File.ReadAllText(@"..\..\Common\TestClassA.cs")
                            .GetSyntaxRoot();
 
+            var singleIndent = "    ";
             var lineInfo = new Dictionary<SyntaxToken, SyntaxTrivia>();
 
-            // var test = root.DescendantTokens()
-
-            //                                .Where(x => x.IsKind(SyntaxKind.DotToken) &&
-            //                                            x.HasLeadingTrivia &&
-            //                                            x.LeadingTrivia.Any(y => y.IsKind(SyntaxKind.WhitespaceTrivia)))
-
-            //                                .Select(x => new
-            //                                {
-            //                                    Token = x,
-            //                                    Line = x.EndLineNumber(),
-            //                                    ParentStatement = x.ParentStatement()
-            //                                    // .GetLeadingTrivia().LastOrDefault(y => y.IsKind(SyntaxKind.WhitespaceTrivia))
-            //                                })
-            //                                .GroupBy(x => x.ParentStatement)
-            //                                .ToArray();
-
-            var linesStartingWithDot = root.DescendantTokens()
+            var multilineSTatements = root.DescendantTokens()
 
                                            .Where(x => x.IsKind(SyntaxKind.DotToken) &&
                                                        x.HasLeadingTrivia &&
@@ -64,55 +49,44 @@ namespace CMPlus.Tests
                                            .GroupBy(x => x.WhitespaceTrivia)
                                            .ToArray();
 
-            // var result = priceLog.GroupBy(s => s.LogDateTime.ToString("MMM yyyy")).Select(grp => new PriceLog() { LogDateTime = Convert.ToDateTime(grp.Key), Price = (int)grp.Average(p => p.Price) }).ToList()
-
-            /// must be done in a single hit
-            foreach (var block in linesStartingWithDot)
+            foreach (var statement in multilineSTatements)
             {
-                var minIndent = block.Key.ToString();
-                var whiteSpace = SyntaxFactory.Whitespace(minIndent);
-                foreach (var item in block)
-                    lineInfo.Add(item.Token, whiteSpace);
+                var statementIndent = statement.Key.ToString();
+                var firstDescendandLineIndent = statement.First().Token.LastWhitespaceTrivia().ToString();
+                var desiredIndent = (statementIndent + singleIndent);
+
+                var offset = desiredIndent.Length - firstDescendandLineIndent.Length;
+
+                if (offset > 0)
+                {
+                    var extraIndent = new string(' ', offset);
+
+                    foreach (var item in statement)
+                    {
+                        var itemIndent = item.Token.LastWhitespaceTrivia() + extraIndent;
+                        lineInfo.Add(item.Token, SyntaxFactory.Whitespace(itemIndent));
+                    }
+                }
             }
 
+            // must be done in a single hit in order to avoid invalidating tokens during the run
             root = root.ReplaceTokens(lineInfo.Keys,
                 (oldToken, newToken) =>
                 {
-                    // var indent = lineInfo[oldToken].indent;
-                    var oldWhitespaces = oldToken.LeadingTrivia.Where(x => x.IsKind(SyntaxKind.WhitespaceTrivia));
+                    var newWhitespace = lineInfo[oldToken];
+                    var oldWhitespaces = oldToken.LeadingTrivia
+                                                 .Where(x => x.IsKind(SyntaxKind.WhitespaceTrivia));
 
-                    return oldToken.WithoutTrivia()
-                               .WithLeadingTrivia(oldToken.ReplaceTrivia(oldWhitespaces,
-                                                                         (x, y) =>
-                                                                         {
-                                                                             var parentIndent = oldToken.ParentStatementWhitespaceTrivia().ToString();
-                                                                             return SyntaxFactory.Whitespace(parentIndent + "    ");
-                                                                             // return whiteSpace;
-                                                                         }).LeadingTrivia)
-                               // (x, y) => lineInfo[oldToken]).LeadingTrivia)
-                               .WithTrailingTrivia(oldToken.TrailingTrivia);
+                    var newLeadingTrivia = oldToken.ReplaceTrivia(oldWhitespaces, (x, y) => newWhitespace)
+                                                   .LeadingTrivia;
+
+                    return oldToken
+                        .WithoutTrivia()
+                        .WithLeadingTrivia(newLeadingTrivia)
+                        .WithTrailingTrivia(oldToken.TrailingTrivia);
                 });
 
             var text1 = root.ToFullString();
-            return;
-
-            // foreach (var dot in linesStartingWithDot.Reverse())
-            // {
-            //     SyntaxTrivia trivia = dot.LeadingTrivia.FirstOrDefault(x => x.IsKind(SyntaxKind.WhitespaceTrivia));
-            //     var token = trivia.Token;
-            //     var line = dot.GetLocation().GetLineSpan().EndLinePosition.Line;
-            //     Debug.WriteLine($"{line}: {trivia}{token}");
-
-            //     if (line == 19)
-            //         root = root.ReplaceToken(token, token.WithoutTrivia()
-            //                                          // .WithLeadingTrivia(whiteSpace)
-            //                                          .WithLeadingTrivia(SyntaxTriviaList.Empty)
-            //                                          .WithTrailingTrivia(token.TrailingTrivia));
-            //     // root = root.ReplaceTrivia(trivia, whiteSpace);
-            //     //root = root.ReplaceToken(token, token.RemoveFromLeadingTrivia(trivia));
-            // }
-
-            // var text = root.ToFullString();
         }
 
         static void TestGaps()
