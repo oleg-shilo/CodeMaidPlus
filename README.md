@@ -21,35 +21,33 @@ The following formatting actions are performed during _CodeMaid+_ execution:
 ### Sorting using statements 
 CodeMaid invokes Visual Studio own 'remove and sort using statements'. If it is done on saving the document it can lead to the accidental loss of some of them. The problem is that VS does both removal and sorting. CodeMaid.Plus fixes this problem by not removing unused usings but still sorting and removing duplicates:
 
-![](images/using.before.png)
-![](images/using.after.png)
+![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/using.before.png)
+![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/using.after.png)
 
 ### Fluent is not aligned
 CodeMaid/VS more relaxed indentation for fluent API is great but it may get accidentally misaligned and not even gain the first level of indent. CodeMaid+ fixes it by ensuring at lease one level of indentation:
 
-![](images/indent-1.before.png)
-![](images/indent-1.after.png)
+![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/indent-1.before.png)
+![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/indent-1.after.png)
 
 In case of more canonical Fluent pattern the original indentation stays untouched.
-![](images/indent-2.after.png)
+![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/indent-2.after.png)
 
 ### XML Documentation block may contain trailing blank line
 
 A simple problem that is just overlooked by CodeMaid.
 
-![](images/doc.before.png)
-![](images/doc.after.png)
+![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/doc.before.png)
+![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/doc.after.png)
 
 
 ## Installation
 
 Install the extension from Visual Studio Market place and configure it to be invoked during CodeMaid cleanup by placing the command `Tools.CM+Format` in the _CodeMaid > Options > Reorganizing > ThirdParty > Other Cleaning Commands_:
 
-![](images/config.png)
+![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/config.png)
  
 
 ## Conclusion
 
 This solution is an open end effort and it can grow in additional functionality if the need arises. On the other hand, it may be short lived if CodeMaid address its problems natively.
-
-
