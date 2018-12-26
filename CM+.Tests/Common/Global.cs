@@ -1,12 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Xunit;
+using Microsoft.Win32;
 using CMPlus;
-using System.Collections.Generic;
+using Xunit;
+using AttributeData = Microsoft.CodeAnalysis.AttributeData;
 
 namespace CMPlus.Tests
 {

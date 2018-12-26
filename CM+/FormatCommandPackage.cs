@@ -37,6 +37,7 @@ namespace CMPlus
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(FormatCommandPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
+    [ProvideToolWindow(typeof(SettingsWindow))]
     public sealed class FormatCommandPackage : AsyncPackage
     {
         /// <summary>
@@ -72,6 +73,7 @@ namespace CMPlus
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await FormatCommand.InitializeAsync(this);
+            await SettingsWindowCommand.InitializeAsync(this);
         }
 
         #endregion Package Members
