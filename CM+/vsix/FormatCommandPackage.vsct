@@ -60,9 +60,10 @@
       <Button guid="guidFormatCommandPackageCmdSet" id="FormatCommandId" priority="0x0100" type="Button">
         <Parent guid="guidFormatCommandPackageCmdSet" id="MyMenuGroup" />
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
+        <CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <!--Command: "Tools.CM+Format" -->
-          <ButtonText>CM+ Format Active Document</ButtonText>
+          <ButtonText>CM+ Format</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidFormatCommandPackageCmdSet" id="cmdidSettingsWindowCommand" priority="0x0100" type="Button">

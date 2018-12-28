@@ -1,9 +1,11 @@
-﻿namespace CMPlus
-{
-    using System.Diagnostics.CodeAnalysis;
-    using System.Windows;
-    using System.Windows.Controls;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
+namespace CMPlus
+{
     /// <summary>
     /// Interaction logic for SettingsWindowControl.
     /// </summary>
@@ -15,6 +17,36 @@
         public SettingsWindowControl()
         {
             this.InitializeComponent();
+            this.Loaded += SettingsWindowControl_Loaded;
+        }
+
+        private void SettingsWindowControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            var hostWindow = this.FindParent<Window>();
+            if (hostWindow != null)
+            {
+                // there is no way to adjust window size from designer
+                hostWindow.Width = this.Width;
+                hostWindow.Height = this.Height + 25;
+            }
+
+            RefreshStatus();
+        }
+
+        private void RefreshStatus()
+        {
+            integrate.IsEnabled = Settings.IsCmInstalled;
+
+            if (Settings.IsIntegrated)
+            {
+                integrate.Content = "Unintegrate";
+                status.Text = "Integrated";
+            }
+            else
+            {
+                integrate.Content = "Integrate";
+                status.Text = "Unintegrated" + (Settings.IsCmInstalled ? "" : " (CodeMaid is not installed)");
+            }
         }
 
         /// <summary>
@@ -26,9 +58,32 @@
         [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", Justification = "Default event handler naming pattern")]
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(
-                string.Format(System.Globalization.CultureInfo.CurrentUICulture, "Invoked '{0}'", this.ToString()),
-                "SettingsWindow");
+            // Excellent example of code analysis going crazy: disabling a simple warning with two extremely
+            // noisy attributes for every warning!!!
+        }
+
+        private void integrate_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.ToggleIntegration();
+            RefreshStatus();
+
+            var hostWindow = this.FindParent<Window>();
+            if (hostWindow != null)
+                hostWindow.Close();
+
+            MessageBox.Show("The changes will take affect only when you restart Visual Studio or press 'Save' " +
+                            "button in the CodeMaid 'Options' dialog.", "CM+ Settings");
+        }
+
+        private void help_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("https://github.com/oleg-shilo/CodeMaidPlus");
+            }
+            catch
+            {
+            }
         }
     }
 }

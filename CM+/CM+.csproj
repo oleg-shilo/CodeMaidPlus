@@ -54,6 +54,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Common\Settings.cs" />
     <Compile Include="Logic\BlankLinesCleaner.cs" />
     <Compile Include="FormatCommand.cs" />
     <Compile Include="FormatCommandPackage.cs" />
@@ -78,13 +80,20 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="licence.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\SettingsWindowCommand.png" />
     <VSCTCompile Include="vsix\FormatCommandPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
       <SubType>Designer</SubType>
     </VSCTCompile>
     <Content Include="Resources\FormatCommand.png" />
-    <Content Include="Resources\FormatCommandPackage.ico" />
+    <Content Include="Resources\FormatCommandPackage.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

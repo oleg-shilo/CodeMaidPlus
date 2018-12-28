@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,6 +23,8 @@ namespace CMPlus
     /// </summary>
     internal sealed class FormatCommand
     {
+        public const string CommandStrId = "Tools.CM+Format";
+
         /// <summary>
         /// Command ID.
         /// </summary>
@@ -35,7 +38,7 @@ namespace CMPlus
         /// <summary>
         /// VS Package that provides this command, not null.
         /// </summary>
-        readonly AsyncPackage package;
+        private readonly AsyncPackage package;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatCommand"/> class.
@@ -49,8 +52,18 @@ namespace CMPlus
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
             var menuCommandID = new CommandID(CommandSet, CommandId);
-            var menuItem = new MenuCommand(this.Execute, menuCommandID);
+            var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
+            menuItem.BeforeQueryStatus += OnBeforeQueryStatus;
             commandService.AddCommand(menuItem);
+        }
+
+        private void OnBeforeQueryStatus(object sender, EventArgs e)
+        {
+            var myCommand = sender as OleMenuCommand;
+            if (null != myCommand)
+            {
+                myCommand.Text = "CM+ Format Active Document";
+            }
         }
 
         /// <summary>
@@ -84,24 +97,33 @@ namespace CMPlus
         /// </summary>
         /// <param name="sender">Event sender.</param>
         /// <param name="e">Event args.</param>
-        void Execute(object sender, EventArgs e)
+        private void Execute(object sender, EventArgs e)
         {
-            // https://stackoverflow.com/questions/21435665/remove-extraneous-semicolons-in-c-sharp-using-roslyn-replace-w-empty-trivia
-            // https://johnkoerner.com/csharp/code%20analysis/roslyn/creating-a-code-fix-that-fixes-comments/
-
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            var document = Global.GetActiveDocument();
-
-            if (document != null && document.TryGetSyntaxRoot(out SyntaxNode root))
+            try
             {
-                root = root.SortUsings()
-                           .RemoveXmlDocGaps()
-                           .AlignIndents();
+                // https://stackoverflow.com/questions/21435665/remove-extraneous-semicolons-in-c-sharp-using-roslyn-replace-w-empty-trivia
+                // https://johnkoerner.com/csharp/code%20analysis/roslyn/creating-a-code-fix-that-fixes-comments/
 
-                document = document.WithSyntaxRoot(root);
+                ThreadHelper.ThrowIfNotOnUIThread();
 
-                Global.Workspace.TryApplyChanges(document.Project.Solution);
+                var document = Global.GetActiveDocument();
+
+                if (document != null && document.TryGetSyntaxRoot(out SyntaxNode root))
+                {
+                    root = root.SortUsings()
+                               .RemoveXmlDocGaps()
+                               .AlignIndents();
+
+                    document = document.WithSyntaxRoot(root);
+
+                    Global.Workspace.TryApplyChanges(document.Project.Solution);
+                }
+            }
+            catch (Exception exception)
+            {
+#if DEBUG
+                MessageBox.Show(exception.ToString(), "CM+");
+#endif
             }
         }
     }

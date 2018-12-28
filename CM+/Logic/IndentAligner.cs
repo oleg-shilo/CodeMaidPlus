@@ -18,14 +18,23 @@ namespace CMPlus
                                           .Where(x => x.IsKind(SyntaxKind.DotToken) &&
                                                       x.HasLeadingTrivia &&
                                                       x.LeadingTrivia.Any(y => y.IsKind(SyntaxKind.WhitespaceTrivia)))
-                                          .Select(x => new
+                                          .Select(x =>
                                           {
-                                              Token = x,
-                                              WhitespaceTrivia = x.ParentStatementWhitespaceTrivia(),
+                                              try
+                                              {
+                                                  return
+                                                      new
+                                                      {
+                                                          Token = x,
+                                                          WhitespaceTrivia = x.ParentStatementWhitespaceTrivia(),
+                                                      };
+                                              }
+                                              catch { return null; }
                                           })
+                                          .Where(x => x != null)
                                           .GroupBy(x => x.WhitespaceTrivia);
 
-            // determine if the lines are not indented at least by a signle level comparing to the statement
+            // determine if the lines are not indented at least by a single level comparing to the statement
             // root indent.
             foreach (var statement in multilineSTatements)
             {

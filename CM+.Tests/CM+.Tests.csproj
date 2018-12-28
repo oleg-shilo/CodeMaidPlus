@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="BlankLinesCleaner.cs" />
     <Compile Include="Common\Global.cs" />
+    <Compile Include="TestBed.cs" />
     <Compile Include="SortUsings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Common\TestClassA.cs">
