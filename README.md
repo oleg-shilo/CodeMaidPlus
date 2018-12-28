@@ -46,7 +46,10 @@ A simple problem that is just overlooked by CodeMaid.
 Install the extension from Visual Studio Market place and configure it to be invoked during CodeMaid cleanup by placing the command `Tools.CM+Format` in the _CodeMaid > Options > Reorganizing > ThirdParty > Other Cleaning Commands_:
 
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/config.png)
- 
+
+Alternatively you can open extension setting dialog and press 'Integrate' button. The dialog can be accessed via _View > Other Windows > CM+ Settings_:
+
+![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/settings.integrate.png)
 
 ## Conclusion
 
