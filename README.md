@@ -14,12 +14,13 @@ This approach usually works very well. However due to the more liberal nature of
 
 This extension is an attempt to address these CodeMaid shortcomings by extending CodeMaid functionality with additional formatting algorithms that are automatically invoked during CodeMaid cleaning/formatting execution. 
 You just need to configure CodeMaid to invoke _CodeMaid+_ during cleanup (see _**Installation**_ section)
+
 ## Solution
 
 The following formatting actions are performed during _CodeMaid+_ execution:
 
 ### Sorting using statements 
-CodeMaid invokes Visual Studio own 'remove and sort using statements'. If it is done on saving the document it can lead to the accidental loss of some of them. The problem is that VS does both removal and sorting. CodeMaid.Plus fixes this problem by not removing unused usings but still sorting and removing duplicates:
+CodeMaid invokes Visual Studio own 'remove and sort using statements'. If it is done on saving the document it can lead to the accidental loss of some of them. The problem is that VS does both removal and sorting. CodeMaid.Plus fixes this problem by not removing unused usings and still sorting and removing duplicates:
 
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/using.before.png)
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/using.after.png)
