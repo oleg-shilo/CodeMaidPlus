@@ -44,7 +44,7 @@ A simple problem that is just overlooked by CodeMaid.
 
 ## Installation
 
-Install the extension from Visual Studio Market place and configure it to be invoked during CodeMaid cleanup by placing the command `Tools.CM+Format` in the _CodeMaid > Options > Reorganizing > ThirdParty > Other Cleaning Commands_:
+Install the extension from Visual Studio Marketplace and configure it to be invoked during CodeMaid cleanup by placing the command `Tools.CM+Format` in the _CodeMaid > Options > Reorganizing > ThirdParty > Other Cleaning Commands_:
 
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/config.png)
 
