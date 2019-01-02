@@ -10,7 +10,7 @@ The problem has been consistently reported to (and acknowledged by) JetBrains si
 
 For people who don't want to give up on ReSharper and yet demand more than its can do for formatting the solution can be to use it in conjunction with CodeMaid. CodeMaid is specifically developed as a versatile formatting solution thus it can be used in conjunction with ReSharper. CodeMaid for formatting and ReSharper for everything else.  
 
-This approach usually works for me very well. However due to the more liberal nature of the formatting algorithm (something that makes CodMaid so great) it can leave some formatting artefacts that need to be addressed manually.
+This approach usually works very well. However due to the more liberal nature of the formatting algorithm (something that makes CodMaid so great) it can leave some formatting artefacts that need to be addressed manually.
 
 This extension is an attempt to address these CodeMaid shortcomings by extending CodeMaid functionality with additional formatting algorithms that are automatically invoked during CodeMaid cleaning/formatting execution. 
 You just need to configure CodeMaid to invoke _CodeMaid+_ during cleanup (see _**Installation**_ section)
