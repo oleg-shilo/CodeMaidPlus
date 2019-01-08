@@ -10,16 +10,17 @@ The problem has been consistently reported to (and acknowledged by) JetBrains si
 
 For people who don't want to give up on ReSharper and yet demand more than its can do for formatting the solution can be to use it in conjunction with CodeMaid. CodeMaid is specifically developed as a versatile formatting solution thus it can be used in conjunction with ReSharper. CodeMaid for formatting and ReSharper for everything else.  
 
-This approach usually works for me very well. However due to the more liberal nature of the formatting algorithm (something that makes CodMaid so great) it can leave some formatting artefacts that need to be addressed manually.
+This approach usually works very well. However due to the more liberal nature of the formatting algorithm (something that makes CodMaid so great) it can leave some formatting artefacts that need to be addressed manually.
 
 This extension is an attempt to address these CodeMaid shortcomings by extending CodeMaid functionality with additional formatting algorithms that are automatically invoked during CodeMaid cleaning/formatting execution. 
 You just need to configure CodeMaid to invoke _CodeMaid+_ during cleanup (see _**Installation**_ section)
+
 ## Solution
 
 The following formatting actions are performed during _CodeMaid+_ execution:
 
 ### Sorting using statements 
-CodeMaid invokes Visual Studio own 'remove and sort using statements'. If it is done on saving the document it can lead to the accidental loss of some of them. The problem is that VS does both removal and sorting. CodeMaid.Plus fixes this problem by not removing unused usings but still sorting and removing duplicates:
+CodeMaid invokes Visual Studio own 'remove and sort using statements'. If it is done on saving the document it can lead to the accidental loss of some of them. The problem is that VS does both removal and sorting. CodeMaid.Plus fixes this problem by not removing unused usings and still sorting and removing duplicates:
 
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/using.before.png)
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/using.after.png)
@@ -43,7 +44,7 @@ A simple problem that is just overlooked by CodeMaid.
 
 ## Installation
 
-Install the extension from Visual Studio Market place and configure it to be invoked during CodeMaid cleanup by placing the command `Tools.CM+Format` in the _CodeMaid > Options > Reorganizing > ThirdParty > Other Cleaning Commands_:
+Install the extension from Visual Studio Marketplace and configure it to be invoked during CodeMaid cleanup by placing the command `Tools.CM+Format` in the _CodeMaid > Options > Reorganizing > ThirdParty > Other Cleaning Commands_:
 
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/config.png)
 
