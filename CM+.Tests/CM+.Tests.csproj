@@ -60,6 +60,9 @@
   <ItemGroup>
     <Compile Include="BlankLinesCleaner.cs" />
     <Compile Include="Common\Global.cs" />
+    <None Include="Common\TestClassB.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Compile Include="TestBed.cs" />
     <Compile Include="SortUsings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

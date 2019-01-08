@@ -13,6 +13,12 @@ class TestClassA
 
     void Test()
     {
+        var linesWithCode = root.DescendantTokens()
+                                .Where(x => x.HasLeadingTrivia &&
+                                            x.LeadingTrivia
+                                            .Select(x => x)
+                                            .Any(y => y.IsKind(SyntaxKind.WhitespaceTrivia)));
+
         System.Console.WriteLine("");
         var ttt = ""
   .Select(x => x.Select(y => y)
@@ -26,12 +32,12 @@ class TestClassA
         if (true)
         {
             var ttt2 = ""
-                                .Select(x => x)
-                                // dfs
-                                .Select(x => x)
-                                .Select(x => x)
-                                .Select(x => x)
-                                .Select(x => x);
+                      .Select(x => x)
+                      // dfs
+                      .Select(x => x)
+                      .Select(x => x)
+                      .Select(x => x)
+                      .Select(x => x);
         }
 
         Console.WriteLine(""
