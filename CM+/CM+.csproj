@@ -60,6 +60,7 @@
     <Compile Include="FormatCommand.cs" />
     <Compile Include="FormatCommandPackage.cs" />
     <Compile Include="Common\Global.cs" />
+    <Compile Include="Logic\FluentAligner.cs" />
     <Compile Include="Logic\IndentAligner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Logic\UsingsSorter.cs" />
