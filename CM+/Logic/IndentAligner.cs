@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -30,25 +30,20 @@ namespace CMPlus
 
             void UpdateIndentPointsFrom(string line)
             {
-                IndentPoints = IndentPoints.Where(x => x <= line.GetIndentLength())
-                                           .Concat(FindIndentPoints(line))
-                                           .OrderBy(x => x)
-                                           .ToArray();
+                if (IndentPoints.IsEmpty() && line.IsEmpty())
+                    IndentPoints = new[] { 0, singleIndent.Length };
+                else
+                    IndentPoints = IndentPoints.Where(x => x < line.GetIndentLength())
+                                               .Concat(FindIndentPoints(line))
+                                               .Distinct()
+                                               .OrderBy(x => x)
+                                               .ToArray();
+            }
 
-                // if (prevLine.TrimEnd().EndsWith(";") || // prev statement is completed
-                //     prevLine.TrimEnd().EndsWith("}") || // prev statement is completed
-                //     prevLine.TrimEnd().EndsWith(")") || // prev statement is completed
-                //     line.TrimStart().StartsWith("{") || // current statement is a block start
-                //     line.TrimStart().StartsWith("}") || // current statement is a block end
-                //     prevLine.TrimEnd().EndsWith("{")
-                //     )
-                // {
-                //     for (int i = 0; i < prevLine.GetIndentLength() / singleIndent.Length + 1; i++)
-                //     // for (int i = 0; i < prevLine?.Length / singleIndent.Length + 1; i++) // TBD
-                //     {
-                //         indentPoints.Add(singleIndent.Length * (i + 1));
-                //     }
-                // }
+            void Output(string line)
+            {
+                // Console.WriteLine(line);
+                // Console.WriteLine(VisualizeIndentPoints());
             }
 
             public SyntaxNode AlignIndents(SyntaxNode root)
@@ -92,6 +87,15 @@ namespace CMPlus
 
                     var text = lines[lineNumber].ToString();
 
+                    if (IndentPoints.IsEmpty())
+                    {
+                        if (prevNonEmptyLine.IsEmpty() && lines.Count > lineNumber)
+                            prevNonEmptyLine = (lines[lineNumber - 1].ToString());
+
+                        UpdateIndentPointsFrom(prevNonEmptyLine);
+                        Output(prevNonEmptyLine);
+                    }
+
                     if (text.HasText())
                     {
                         int currentIndent = text.GetIndentLength();
@@ -120,8 +124,7 @@ namespace CMPlus
                                                       lineNumber,
                                                       currentIndent - bestIndent));
 
-                            Console.WriteLine(prevNonEmptyLine);
-                            Console.WriteLine(VisualizeIndentPoints());
+                            Output(prevNonEmptyLine);
                             continue;
                         }
                     }
@@ -129,8 +132,7 @@ namespace CMPlus
                     prevNonEmptyLine = text;
                     UpdateIndentPointsFrom(prevNonEmptyLine);
 
-                    Console.WriteLine(prevNonEmptyLine);
-                    Console.WriteLine(VisualizeIndentPoints());
+                    Output(prevNonEmptyLine);
                 }
 
                 // must be done in a single hit in order to avoid invalidating tokens during the run
@@ -155,94 +157,32 @@ namespace CMPlus
 
             int FindBestIndentAlignment(int currentIndent, string line, string prevLine)
             {
-                bool alwaysAlignToNext = false;
-
-                // if (currentIndent % singleIndent.Length == 0)  // TBD
-                //     return currentIndent;
-
-                var indentPoints = new List<int>();
-
-                prevLine = prevLine ?? new string(' ', currentIndent);
-
-                var prevIndentLength = prevLine.GetIndentLength();
-                indentPoints.Add(prevIndentLength);
-                indentPoints.Add(prevIndentLength + singleIndent.Length);
+                // var indentPoints = new List<int>();
+                // indentPoints.AddRange(IndentPoints);
 
                 // Being fluent criteria - "starts with dot"
-                var isFluent = line.TrimStart().StartsWith(".");
-                var isPrevFluent = prevLine.TrimStart().StartsWith(".");
+                // var isFluent = line.TrimStart().StartsWith(".");
+                // var isPrevFluent = prevLine.TrimStart().StartsWith(".");
+                // if (isFluent && !isPrevFluent)
+                //     indentPoints.Remove(prevIndentLength);
 
-                // add left side indent points for if the current line is a start or an end of the code block
-
-                // if (prevLine.TrimEnd().EndsWith(";") || // prev statement is completed
-                //     prevLine.TrimEnd().EndsWith("}") || // prev statement is completed
-                //     prevLine.TrimEnd().EndsWith(")") || // prev statement is completed
-                //     line.TrimStart().StartsWith("{") || // current statement is a block start
-                //     line.TrimStart().StartsWith("}") || // current statement is a block end
-                //     prevLine.TrimEnd().EndsWith("{")
-                //     )
-                // {
-                //     for (int i = 0; i < prevLine.GetIndentLength() / singleIndent.Length + 1; i++)
-                //     // for (int i = 0; i < prevLine?.Length / singleIndent.Length + 1; i++) // TBD
-                //     {
-                //         indentPoints.Add(singleIndent.Length * (i + 1));
-                //     }
-                // }
-
-                indentPoints.AddRange(IndentPoints);
-
-                // else
-                //     for (int i = 0; i < prevLine?.Length / singleIndent.Length + 1; i++) // TBD
-                //     {
-                //         indentPoints.Add(singleIndent.Length * (i + 1));
-                //     }
-
-                indentPoints.RemoveAll(x => x > prevLine.GetIndentLength() + singleIndent.Length);
-                if (prevLine.TrimEnd().EndsWith("("))// prev statement is completed
-                    indentPoints.Add(prevLine.TrimEnd().Length);
-
-                for (int i = 0; i < prevLine.Length - 1; i++)
-                {
-                    // capture all de-referencings
-                    if (prevLine[i] == '.')
-                        indentPoints.Add(i);
-                    // capture first position of the argument (in the future can be a part of "arg list alignment")
-                    else if (prevLine[i] == '(')
-                        indentPoints.Add(i + 1);
-                    // capture first indent of the block
-                    else if (prevLine[i] == '{')
-                        indentPoints.Add(i + singleIndent.Length);
-                    // do not capture "x => x" start of the second 'x'
-                    else if (!isFluent && prevLine[i] == ' ' && prevLine[i + 1] != ' ' && prevLine[i + 1] != '=')
-                        indentPoints.Add(i + 1);
-                }
-
-                if (isFluent && !isPrevFluent)
-                {
-                    indentPoints.Remove(prevIndentLength);
-                }
-
-                if (indentPoints.Contains(currentIndent))
+                if (IndentPoints.IsEmpty() || IndentPoints.Contains(currentIndent))
                     return currentIndent;
 
-                indentPoints = indentPoints.Distinct().OrderBy(x => x).ToList();
+                if (IndentPoints.Last() <= currentIndent)
+                    return IndentPoints.Last();
 
-                if (indentPoints.Last() <= currentIndent)
-                    return indentPoints.Last();
+                if (currentIndent <= IndentPoints.First())
+                    return IndentPoints.First();
 
-                if (currentIndent <= indentPoints.First())
-                    return indentPoints.First();
-
-                var pointsBefore = indentPoints.TakeWhile(x => x < currentIndent);
+                // if we are here then currentIndent is between  IndentPoints.First and IndentPoints.Last
+                var pointsBefore = IndentPoints.TakeWhile(x => x < currentIndent);
 
                 var pointBefore = pointsBefore.Last();
-                var pointAfter = indentPoints[pointsBefore.Count()];
+                var pointAfter = IndentPoints.ToArray()[pointsBefore.Count()];
 
-                // if (alwaysAlignToNext || ((currentIndent - pointBefore) >= (pointAfter - currentIndent))) // TBD
-                if (alwaysAlignToNext || ((currentIndent - pointBefore) >= singleIndent.Length / 2))
-                {
+                if ((currentIndent - pointBefore) >= singleIndent.Length / 2)
                     return pointAfter;
-                }
                 else
                     return pointBefore;
             }
@@ -254,6 +194,7 @@ namespace CMPlus
                 var indentPoints = new List<int>();
 
                 indentPoints.Add(text.GetIndentLength());
+                indentPoints.Add(text.GetIndentLength() + singleIndent.Length);
 
                 for (int i = 0; i < text.Length; i++)
                 {
@@ -267,25 +208,42 @@ namespace CMPlus
                         // the first position of the argument (in the future can be a part of "arg list alignment")
                         indentPoints.Add(i + 1);
                     }
-                    else if (text.Contains("=> ", i - 3) || text.Contains("= ", i - 2))
+                    else if (text.Contains("=> ", i - 3)
+                             || text.Contains("= ", i - 2)
+                             || text.Contains("return ", i - 7)
+                             || text.Contains(": ", i - 2))
                     {
                         // the position of the first element in the lambs expression
                         indentPoints.Add(i);
                     }
+                    if (text.EndsWith("("))
+                    {
+                        // prev statement is completed
+                        indentPoints.Add(text.Length);
+                    }
                     else if (text[i] == '{')
                     {
-                        // if (i != text.Length - 1)
+                        if (i != text.Length - 1)
+                        {
+                            // the first indent of the block
+                            indentPoints.Add(i);
+                        }
+
+                        // should not remove as it will create problem with dictionary declaration:
+                        // new Dictionary<int, int>
                         // {
-                        //     // the first indent of the block
-                        //     indentPoints.Add(i);
+                        //     { 1, 2},
+                        //     { 3, 4}
                         // }
-                        indentPoints.Remove(i);
+                        // see D:\dev\TMS\taipan-app-master\DomainControl\Common\Models\InputSlideDrawer.cs
+                        // indentPoints.Remove(i);
+
                         // and the next indent in the block
                         indentPoints.Add(i + singleIndent.Length);
                     }
                 }
 
-                return indentPoints;
+                return indentPoints.Distinct();
             }
         }
     }

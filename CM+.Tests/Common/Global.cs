@@ -26,7 +26,8 @@ namespace CMPlus.Tests
     {
         static void Main()
         {
-            TestAlignment();
+            // TestAlignment();
+            TestAlignment_();
             // TestFluent();
             // TestGaps();
         }
@@ -41,6 +42,9 @@ namespace CMPlus.Tests
         {
             // Console.WriteLine(
             AlignCode(@"
+[assembly: InternalsVisibleTo(""InstrumentControl.Proxy.Tests""),
+           InternalsVisibleTo(""DynamicProxyGenAssembly2""),
+           InternalsVisibleTo(""TATSimulator"")]
 var reagentsIdentified = new ReagentsIdentified
 {
     Console.WriteLine(
@@ -56,7 +60,7 @@ var reagentsIdentified = new ReagentsIdentified
                 LaneNumber = rack.LaneNumber,
                 TimeLoaded = rack.TimeLoaded,
                 Reagents = rack.Positions
-                            .Where(p => p.Container != null &&
+                             .Where(p => p.Container != null &&
                                         p.State == HvReagentPositionState.IdKnown)
                               .Select(reagent => new ReagentScan
                                 {
