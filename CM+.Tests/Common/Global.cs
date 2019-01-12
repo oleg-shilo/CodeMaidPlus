@@ -26,8 +26,8 @@ namespace CMPlus.Tests
     {
         static void Main()
         {
-            // TestAlignment();
-            TestAlignment_();
+            TestAlignment();
+            //TestAlignment_();
             // TestFluent();
             // TestGaps();
         }
@@ -45,6 +45,12 @@ namespace CMPlus.Tests
 [assembly: InternalsVisibleTo(""InstrumentControl.Proxy.Tests""),
            InternalsVisibleTo(""DynamicProxyGenAssembly2""),
            InternalsVisibleTo(""TATSimulator"")]
+    var map = new Dictionary<int, int>
+    {
+        {1, 2},
+         {3, 4}
+    }
+
 var reagentsIdentified = new ReagentsIdentified
 {
     Console.WriteLine(
@@ -110,7 +116,7 @@ var reagentsIdentified = new ReagentsIdentified
         {
             var root = code.GetSyntaxRoot();
 
-            root = root.AlignIndents();
+            root = root.AlignIndents(Console.WriteLine);
 
             var formattedText = root.ToFullString();
             return formattedText;

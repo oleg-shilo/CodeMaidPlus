@@ -8,14 +8,19 @@ namespace CMPlus
 {
     public static class IndentAligner
     {
-        public static SyntaxNode AlignIndents(this SyntaxNode root)
-            => new Aligner().AlignIndents(root);
+        public static SyntaxNode AlignIndents(this SyntaxNode root, Action<string> onLineVisualized = null)
+            => new Aligner(onLineVisualized).AlignIndents(root);
 
         class Aligner
         {
             static string singleIndent = "    ";
-
+            Action<string> onLineVisualized;
             IEnumerable<int> IndentPoints = new List<int>();
+
+            public Aligner(Action<string> onLineVisualized = null)
+            {
+                this.onLineVisualized = onLineVisualized;
+            }
 
             string VisualizeIndentPoints()
             {
@@ -42,8 +47,11 @@ namespace CMPlus
 
             void Output(string line)
             {
-                // Console.WriteLine(line);
-                // Console.WriteLine(VisualizeIndentPoints());
+                if (onLineVisualized != null)
+                {
+                    onLineVisualized(line);
+                    onLineVisualized(VisualizeIndentPoints());
+                }
             }
 
             public SyntaxNode AlignIndents(SyntaxNode root)
@@ -84,6 +92,9 @@ namespace CMPlus
                     }
 
                     var lineNumber = startToken.GetLineNumber();
+
+                    if (lineNumber == 0)
+                        continue;
 
                     var text = lines[lineNumber].ToString();
 
