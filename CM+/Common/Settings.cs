@@ -21,17 +21,25 @@ using Task = System.Threading.Tasks.Task;
 using Document = Microsoft.CodeAnalysis.Document;
 using Solution = Microsoft.CodeAnalysis.Solution;
 using DteDocument = EnvDTE.Document;
+using Newtonsoft.Json;
 
 namespace CMPlus
 {
-    public static class Settings
+    public class Settings
     {
-        private static string configFile = Environment.SpecialFolder.LocalApplicationData.PathCombine("CodeMaid", "CodeMaid.config");
-        private static string configValueName = "ThirdParty_OtherCleaningCommandsExpression";
+        public bool SortUsings { get; set; } = true;
+        public bool RemoveXmlDocGaps { get; set; } = true;
+        public bool AlignIndents { get; set; } = true;
+    }
+
+    public static class CMSettings
+    {
+        static string configFile = Environment.SpecialFolder.LocalApplicationData.PathCombine("CodeMaid", "CodeMaid.config");
+        static string configValueName = "ThirdParty_OtherCleaningCommandsExpression";
 
         public static bool IsCmInstalled { get => File.Exists(configFile); }
 
-        private static string CurrentIntegrationSetting
+        static string CurrentIntegrationSetting
         {
             get
             {

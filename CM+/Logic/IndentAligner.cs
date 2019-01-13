@@ -9,7 +9,12 @@ namespace CMPlus
     public static class IndentAligner
     {
         public static SyntaxNode AlignIndents(this SyntaxNode root, Action<string> onLineVisualized = null)
-            => new Aligner(onLineVisualized).AlignIndents(root);
+        {
+            if (Runtime.Settings.SortUsings)
+                root = new Aligner(onLineVisualized).AlignIndents(root);
+
+            return root;
+        }
 
         class Aligner
         {

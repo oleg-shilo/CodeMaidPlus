@@ -21,16 +21,21 @@ namespace CMPlus
     {
         public static SyntaxNode SortUsings(this SyntaxNode root)
         {
-            var usingNodes = root.DescendantNodesAndSelf(node => !node.IsKind(SyntaxKind.ClassDeclaration))
-                                 .Where(node => node.IsKind(SyntaxKind.CompilationUnit) ||
-                                                node.IsKind(SyntaxKind.NamespaceDeclaration));
+            if (Runtime.Settings.SortUsings)
+            {
+                var usingNodes = root.DescendantNodesAndSelf(node => !node.IsKind(SyntaxKind.ClassDeclaration))
+                                     .Where(node => node.IsKind(SyntaxKind.CompilationUnit) ||
+                                                    node.IsKind(SyntaxKind.NamespaceDeclaration));
 
-            return root.ReplaceNodes(usingNodes, (originalNode, newNode) =>
-                                                 {
-                                                     var rawUsings = originalNode.GetUsings();
-                                                     var orderedUsings = rawUsings.Sort();
-                                                     return newNode.WithUsings(orderedUsings);
-                                                 });
+                root = root.ReplaceNodes(usingNodes, (originalNode, newNode) =>
+                                                     {
+                                                         var rawUsings = originalNode.GetUsings();
+                                                         var orderedUsings = rawUsings.Sort();
+                                                         return newNode.WithUsings(orderedUsings);
+                                                     });
+            }
+
+            return root;
         }
     }
 }

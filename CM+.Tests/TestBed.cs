@@ -5,7 +5,7 @@ using Xunit;
 
 namespace CMPlus.Tests
 {
-    public class TestBed
+    public class TestBed : TestBase
     {
         [Fact]
         public void Perform()

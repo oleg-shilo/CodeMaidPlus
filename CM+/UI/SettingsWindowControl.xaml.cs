@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -11,6 +14,35 @@ namespace CMPlus
     /// </summary>
     public partial class SettingsWindowControl : UserControl
     {
+        public class SettingsItem
+        {
+            bool enabled;
+
+            public bool Enabled
+            {
+                get
+                {
+                    return enabled;
+                }
+
+                set
+                {
+                    enabled = value;
+                    typeof(Settings)
+                       .GetProperties()
+                       .Where(p => p.Name == this.Name)
+                       .ForEach(p => p.SetValue(Runtime.Settings, value));
+                }
+            }
+
+            public string Name { get; set; }
+
+            public override string ToString()
+            {
+                return Name?.FromCamelToPhrase();
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsWindowControl"/> class.
         /// </summary>
@@ -20,24 +52,47 @@ namespace CMPlus
             this.Loaded += SettingsWindowControl_Loaded;
         }
 
+        private void RefreshSettings()
+        {
+            this.Settings.Clear();
+            typeof(Settings)
+                .GetProperties()
+                .Where(p => p.PropertyType == typeof(bool) && p.CanRead && p.CanWrite)
+                .Select(p => new SettingsItem { Enabled = (bool)p.GetValue(Runtime.Settings), Name = p.Name })
+                .ForEach(this.Settings.Add);
+        }
+
+        Window ParentWindow => this.FindParent<Window>();
+
         private void SettingsWindowControl_Loaded(object sender, RoutedEventArgs e)
         {
-            var hostWindow = this.FindParent<Window>();
+            var hostWindow = this.ParentWindow;
             if (hostWindow != null)
             {
-                // there is no way to adjust window size from designer
-                hostWindow.Width = this.Width;
-                hostWindow.Height = this.Height + 25;
+                // there is no way to adjust window size from the designer
+                hostWindow.Width = 410;
+                hostWindow.Height = 225;
+                hostWindow.Closed += HostWindow_Closed;
             }
 
             RefreshStatus();
+            RefreshSettings();
+
+            DataContext = this;
         }
+
+        private void HostWindow_Closed(object sender, EventArgs e)
+        {
+            Runtime.Settings.Save();
+        }
+
+        public ObservableCollection<SettingsItem> Settings { get; set; } = new ObservableCollection<SettingsItem>();
 
         private void RefreshStatus()
         {
-            integrate.IsEnabled = Settings.IsCmInstalled;
+            integrate.IsEnabled = CMSettings.IsCmInstalled;
 
-            if (Settings.IsIntegrated)
+            if (CMSettings.IsIntegrated)
             {
                 integrate.Content = "Unintegrate";
                 status.Text = "Integrated";
@@ -45,7 +100,7 @@ namespace CMPlus
             else
             {
                 integrate.Content = "Integrate";
-                status.Text = "Unintegrated" + (Settings.IsCmInstalled ? "" : " (CodeMaid is not installed)");
+                status.Text = "Unintegrated" + (CMSettings.IsCmInstalled ? "" : " (CodeMaid is not installed)");
             }
         }
 
@@ -64,12 +119,10 @@ namespace CMPlus
 
         private void integrate_Click(object sender, RoutedEventArgs e)
         {
-            Settings.ToggleIntegration();
+            CMSettings.ToggleIntegration();
             RefreshStatus();
 
-            var hostWindow = this.FindParent<Window>();
-            if (hostWindow != null)
-                hostWindow.Close();
+            this.ParentWindow?.Close();
 
             MessageBox.Show("The changes will take affect only when you restart Visual Studio or press 'Save' " +
                             "button in the CodeMaid 'Options' dialog.", "CM+ Settings");
@@ -81,8 +134,31 @@ namespace CMPlus
             {
                 System.Diagnostics.Process.Start("https://github.com/oleg-shilo/CodeMaidPlus");
             }
-            catch
+            catch { }
+        }
+
+        private void close_Click(object sender, RoutedEventArgs e)
+        {
+            this.ParentWindow?.Close();
+        }
+
+        private void processDir_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dirSelector.SelectedItem != null)
             {
+                dirSelector.SelectedItem = null;
+                try
+                {
+                    selectedDir.Text = Path.GetDirectoryName(Global.Workspace.CurrentSolution.FilePath);
+                }
+                catch
+                {
+                    selectedDir.Text = "< error >";
+                }
             }
         }
     }

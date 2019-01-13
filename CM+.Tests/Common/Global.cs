@@ -13,6 +13,14 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace CMPlus.Tests
 {
+    public class TestBase
+    {
+        static TestBase()
+        {
+            Runtime.Settings = new Settings { AlignIndents = true, RemoveXmlDocGaps = true, SortUsings = true };
+        }
+    }
+
     public static class Global
     {
         public static SyntaxNode GetSyntaxRoot(this string code)

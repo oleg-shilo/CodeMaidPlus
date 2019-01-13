@@ -5,7 +5,7 @@ using Xunit;
 
 namespace CMPlus.Tests
 {
-    public class BlankLinesCleaner
+    public class BlankLinesCleaner : TestBase
     {
         [Fact]
         public void Remove_SingleLine_Gaps()

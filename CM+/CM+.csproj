@@ -57,6 +57,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Common\Runtime.cs" />
     <Compile Include="Common\Settings.cs" />
     <Compile Include="Logic\BlankLinesCleaner.cs" />
     <Compile Include="FormatCommand.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Logic\UsingsSorter.cs" />
     <Compile Include="SettingsWindow.cs" />
     <Compile Include="SettingsWindowCommand.cs" />
+    <Compile Include="Logic\Settings.cs" />
     <Compile Include="UI\SettingsWindowControl.xaml.cs">
       <DependentUpon>SettingsWindowControl.xaml</DependentUpon>
     </Compile>
@@ -320,6 +322,7 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />

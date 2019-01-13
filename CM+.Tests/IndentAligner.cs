@@ -42,7 +42,7 @@ namespace CMPlus.Tests
 
      */
 
-    public class IndentAligner
+    public class IndentAligner : TestBase
     {
         [Fact(Skip = "The functionality is not implemented yet")]
         public void Align_BracesBock()

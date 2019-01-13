@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp;
 using Xunit;
 
 namespace CMPlus.Tests
 {
-    public class SortUsings
+    public class SortUsings : TestBase
     {
         [Fact]
         public void Sort_Alphabetically()
