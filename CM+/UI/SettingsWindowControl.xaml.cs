@@ -3,9 +3,11 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace CMPlus
 {
@@ -14,6 +16,8 @@ namespace CMPlus
     /// </summary>
     public partial class SettingsWindowControl : UserControl
     {
+        private object progressBar;
+
         public class SettingsItem
         {
             bool enabled;
@@ -70,11 +74,12 @@ namespace CMPlus
             if (hostWindow != null)
             {
                 // there is no way to adjust window size from the designer
-                hostWindow.Width = 410;
-                hostWindow.Height = 225;
+                hostWindow.Width = 600;
+                hostWindow.Height = 280;
                 hostWindow.Closed += HostWindow_Closed;
             }
 
+            dirSelector.SelectedItem = dirSelector.Items[0];
             RefreshStatus();
             RefreshSettings();
 
@@ -144,7 +149,53 @@ namespace CMPlus
 
         private void processDir_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                if (Directory.Exists(selectedDir.Text))
+                {
+                    var utf8WithBom = new System.Text.UTF8Encoding(true);
+
+                    var files = Directory.GetFiles(selectedDir.Text, "*.cs", SearchOption.AllDirectories);
+                    var count = 0;
+
+                    this.progress.Visibility = Visibility.Visible;
+                    this.processDir.IsEnabled = false;
+                    this.progress.Value = count;
+                    this.progress.Maximum = files.Count();
+
+                    Task.Run(() =>
+                    {
+                        foreach (var file in files)
+                        {
+                            var code = File.ReadAllText(file);
+
+                            var root = code.GetSyntaxRoot();
+
+                            var formattedCode = root.AlignIndents().ToFullString();
+
+                            if (code != formattedCode)
+                                File.WriteAllText(file, formattedCode, utf8WithBom);
+
+                            InUiThread(() => this.progress.Value = count);
+                        }
+
+                        InUiThread(() =>
+                        {
+                            this.progress.Visibility = Visibility.Collapsed;
+                            this.processDir.IsEnabled = true;
+                        });
+                    });
+                }
+                else
+                    MessageBox.Show($"Directory '{selectedDir.Text}' does not exist.");
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
         }
+
+        static void InUiThread(Action action) => Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, action);
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

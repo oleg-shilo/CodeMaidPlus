@@ -6,15 +6,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
     Name="MyToolWindow"
-    d:DesignHeight="250"
-    d:DesignWidth="410"
+    d:DesignHeight="280"
+    d:DesignWidth="600"
     Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
     Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
     mc:Ignorable="d">
     <Grid Margin="10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="70" />
-            <RowDefinition Height="100" />
+            <RowDefinition Height="60" />
+            <RowDefinition Height="90" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -24,22 +24,19 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="2*" />
-                <RowDefinition Height="4*" />
+                <RowDefinition Height="3*" />
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
             <Border
                 Grid.RowSpan="2"
                 Grid.ColumnSpan="2"
                 HorizontalAlignment="Stretch"
                 BorderBrush="Gray"
                 BorderThickness="1" />
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="100" />
-            </Grid.ColumnDefinitions>
-            <TextBlock
-                Height="16"
-                Margin="5,6,5,7"
-                VerticalAlignment="Center">
+            <TextBlock Margin="5,0" VerticalAlignment="Center">
                 Command Id:
             </TextBlock>
             <TextBox
@@ -79,7 +76,61 @@
                 Content="Integrate"
                 ToolTip="Click to enable/disable CodeMaid integration" />
         </Grid>
-
+        <Grid Grid.Row="1" Margin="0,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="5" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+            <Border
+                Grid.RowSpan="3"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Stretch"
+                BorderBrush="Gray"
+                BorderThickness="1" />
+            <TextBlock Margin="5,0" VerticalAlignment="Center">
+                Directory to batch-process:
+            </TextBlock>
+            <ComboBox
+                x:Name="dirSelector"
+                Grid.Row="1"
+                Margin="5,0"
+                VerticalAlignment="Center"
+                SelectionChanged="ComboBox_SelectionChanged">
+                <ComboBoxItem>&lt;Solution Directory&gt;</ComboBoxItem>
+            </ComboBox>
+            <TextBox
+                x:Name="selectedDir"
+                Grid.Row="1"
+                Margin="7,0,25,0"
+                VerticalAlignment="Center"
+                IsReadOnly="True">
+                <TextBox.ToolTip>
+                    <TextBlock>
+                        Enter the directory you want to process.<LineBreak />
+                        The all .cs from the sub-directories will also be processed.</TextBlock>
+                </TextBox.ToolTip>
+                &lt;Solution Directory&gt;
+            </TextBox>
+            <Button
+                x:Name="processDir"
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="5,0"
+                VerticalAlignment="Center"
+                Click="processDir_Click"
+                Content="Process"
+                ToolTip="Click to enable/disable CodeMaid integration" />
+            <ProgressBar
+                x:Name="progress"
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                Visibility="Collapsed" />
+        </Grid>
         <ListBox
             Grid.Row="2"
             Grid.RowSpan="1"

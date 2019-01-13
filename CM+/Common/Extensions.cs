@@ -97,6 +97,9 @@ namespace CMPlus
 
     public static class RoslynExtensions
     {
+        public static SyntaxNode GetSyntaxRoot(this string code)
+            => CSharpSyntaxTree.ParseText(code).GetRoot();
+
         public static string GetLineText(this SyntaxNode node, int line)
             => node.GetText().Lines[line].ToString();
 
