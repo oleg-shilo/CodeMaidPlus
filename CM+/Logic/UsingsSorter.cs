@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
@@ -28,11 +28,11 @@ namespace CMPlus
                                                     node.IsKind(SyntaxKind.NamespaceDeclaration));
 
                 root = root.ReplaceNodes(usingNodes, (originalNode, newNode) =>
-                                                     {
-                                                         var rawUsings = originalNode.GetUsings();
-                                                         var orderedUsings = rawUsings.Sort();
-                                                         return newNode.WithUsings(orderedUsings);
-                                                     });
+                                                      {
+                                                          var rawUsings = originalNode.GetUsings();
+                                                          var orderedUsings = rawUsings.Sort();
+                                                          return newNode.WithUsings(orderedUsings);
+                                                      });
             }
 
             return root;

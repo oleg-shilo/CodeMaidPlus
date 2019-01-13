@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -62,9 +62,9 @@ namespace CMPlus
                 if (el == null)
                 {
                     el = new XElement("setting",
-                             new XAttribute("name", configValueName),
-                             new XAttribute("serializeAs", "String"),
-                             new XElement("value", value));
+                                      new XAttribute("name", configValueName),
+                                      new XAttribute("serializeAs", "String"),
+                                      new XElement("value", value));
 
                     doc.Root
                        .Descendants("setting")

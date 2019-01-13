@@ -1,4 +1,4 @@
-class TestClassA
+﻿class TestClassA
 {
     /// <summary>
     /// The test1
@@ -21,26 +21,26 @@ class TestClassA
 
         System.Console.WriteLine("");
         var ttt = ""
-  .Select(x => x.Select(y => y)
-                .Select(y => y)
-                .Select(y => y))
-  .Select(x => x)
-  .Select(x => x)
-  .Select(x => x)
-  .Select(x => x);
+    .Select(x => x.Select(y => y)
+                 .Select(y => y)
+                 .Select(y => y))
+    .Select(x => x)
+    .Select(x => x)
+    .Select(x => x)
+    .Select(x => x);
 
         if (true)
         {
             var ttt2 = ""
-                      .Select(x => x)
-                      // dfs
-                      .Select(x => x)
-                      .Select(x => x)
-                      .Select(x => x)
-                      .Select(x => x);
+                       .Select(x => x)
+                       // dfs
+                       .Select(x => x)
+                       .Select(x => x)
+                       .Select(x => x)
+                       .Select(x => x);
         }
 
         Console.WriteLine(""
-       .Select(x => x));
+        .Select(x => x));
     }
 }

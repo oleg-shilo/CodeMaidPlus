@@ -1,6 +1,6 @@
 # CodeMaid+
 
-This simple extension is an attempt to address some shortcomings of rather excellent code formatting extension [CodeMaid](http://www.codemaid.net/). The best outcome is achieved when it is used (integrated) with CodeMaid even though it can be used on its own.
+This simple extension (see [GitHub home page](https://github.com/oleg-shilo/CodeMaidPlus)) is an attempt to address some shortcomings of rather excellent code formatting extension [CodeMaid](http://www.codemaid.net/). The best outcome is achieved when it is used (integrated) with CodeMaid even though it can be used on its own.
 
 ## Problem
 

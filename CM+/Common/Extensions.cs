@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -162,10 +162,10 @@ namespace CMPlus
 
         public static SyntaxNode WithUsings(this SyntaxNode node, IEnumerable<UsingDirectiveSyntax> usings)
             => (SyntaxNode)(node as CompilationUnitSyntax)?.WithUsings(SyntaxFactory.List(usings)) ??
-               (SyntaxNode)(node as NamespaceDeclarationSyntax)?.WithUsings(SyntaxFactory.List(usings));
+                (SyntaxNode)(node as NamespaceDeclarationSyntax)?.WithUsings(SyntaxFactory.List(usings));
 
         public static IEnumerable<UsingDirectiveSyntax> GetUsings(this SyntaxNode node)
             => (node as CompilationUnitSyntax)?.Usings ??
-               (node as NamespaceDeclarationSyntax)?.Usings;
+                (node as NamespaceDeclarationSyntax)?.Usings;
     }
 }

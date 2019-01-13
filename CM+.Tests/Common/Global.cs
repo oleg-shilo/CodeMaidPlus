@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -87,7 +87,7 @@ var reagentsIdentified = new ReagentsIdentified
 }
 
             "//)
-        ); ;
+                     ); ;
             //             Console.WriteLine(AlignCode(@"
             //     enum Test
             //     {
@@ -139,18 +139,18 @@ var reagentsIdentified = new ReagentsIdentified
 
             var multilineStatements = root.DescendantTokens()
 
-                                           .Where(x => x.IsKind(SyntaxKind.DotToken) &&
+                                          .Where(x => x.IsKind(SyntaxKind.DotToken) &&
                                                        x.HasLeadingTrivia &&
                                                        x.LeadingTrivia.Any(y => y.IsKind(SyntaxKind.WhitespaceTrivia)))
 
-                                           .Select(x => new
-                                           {
-                                               Token = x,
-                                               Text = x.ToString(),
-                                               WhitespaceTrivia = x.ParentStatementWhitespaceTrivia(),
-                                           })
-                                           .GroupBy(x => x.WhitespaceTrivia)
-                                           .ToArray();
+                                          .Select(x => new
+                                          {
+                                              Token = x,
+                                              Text = x.ToString(),
+                                              WhitespaceTrivia = x.ParentStatementWhitespaceTrivia(),
+                                          })
+                                          .GroupBy(x => x.WhitespaceTrivia)
+                                          .ToArray();
 
             foreach (var statement in multilineStatements)
             {

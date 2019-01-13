@@ -1,4 +1,4 @@
-class TestClassB
+﻿class TestClassB
 {
     // /// <summary>
     // /// The test1
@@ -11,9 +11,9 @@ class TestClassB
     // int test2;
 
     protected static AppConfiguration CreateAppConfig(
-            bool tracingEnabled = false,
-            int timeAccelerationFactor = 1,
-            string cameraModesDirectory = "")
+                                                      bool tracingEnabled = false,
+                                                      int timeAccelerationFactor = 1,
+                                                      string cameraModesDirectory = "")
     {
         var appSettings = new NameValueCollection
             {
@@ -38,20 +38,20 @@ class TestClassB
     {
         var linesWithCode = root.DescendantTokens()
                                 .Where(y => y.HasLeadingTrivia &&
-                                         y.LeadingTrivia
-                                           .Select(x => x)
-                                         .Any(y => y.IsKind(SyntaxKind.WhitespaceTrivia)));
+                                            y.LeadingTrivia
+                                            .Select(x => x)
+                                            .Any(y => y.IsKind(SyntaxKind.WhitespaceTrivia)));
 
         {
             int test = 1;
         }
 
         Console.WriteLine("",
-                   1,
-          2,
-                   3,
-             "a".ToCharArray().Length,
-             "b");
+                          1,
+            2,
+                3,
+            "a".ToCharArray().Length,
+            "b");
 
         //         var str = @"
         //         System.Console.WriteLine("",
@@ -68,25 +68,25 @@ class TestClassB
     var reagentsIdentified = new ReagentsIdentified
     {
         Lanes = racks.Select(
-                   rack =>
-                   {
-                       Console.WriteLine(
-                           ds
-                           );
-                       var reagentLaneScan = new ReagentLaneScan
-                       {
-                           LaneNumber = rack.LaneNumber,
-                           TimeLoaded = rack.TimeLoaded,
-                           Reagents = rack.Positions
-                                       .Where(p => p.Container != null &&
-                                                   p.State == HvReagentPositionState.IdKnown)
-                                         .Select(reagent => new ReagentScan
-                                         {
-                                             Position = reagent.Position,
-                                             Upi = reagent.Container.UPI
-                                         }).ToList()
-                       };
-                       return reagentLaneScan;
-                   }).ToList()
+                     rack =>
+                     {
+                         Console.WriteLine(
+                             ds
+                                          );
+                         var reagentLaneScan = new ReagentLaneScan
+                         {
+                             LaneNumber = rack.LaneNumber,
+                             TimeLoaded = rack.TimeLoaded,
+                             Reagents = rack.Positions
+                                        .Where(p => p.Container != null &&
+                                                    p.State == HvReagentPositionState.IdKnown)
+                                        .Select(reagent => new ReagentScan
+                                        {
+                                            Position = reagent.Position,
+                                            Upi = reagent.Container.UPI
+                                        }).ToList()
+                         };
+                         return reagentLaneScan;
+                     }).ToList()
     }
 }

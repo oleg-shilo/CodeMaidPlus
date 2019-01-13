@@ -33,9 +33,9 @@ namespace CMPlus
                 {
                     enabled = value;
                     typeof(Settings)
-                       .GetProperties()
-                       .Where(p => p.Name == this.Name)
-                       .ForEach(p => p.SetValue(Runtime.Settings, value));
+                        .GetProperties()
+                        .Where(p => p.Name == this.Name)
+                        .ForEach(p => p.SetValue(Runtime.Settings, value));
                 }
             }
 
@@ -176,7 +176,7 @@ namespace CMPlus
                             if (code != formattedCode)
                                 File.WriteAllText(file, formattedCode, utf8WithBom);
 
-                            InUiThread(() => this.progress.Value = count);
+                            InUiThread(() => this.progress.Value = count++);
                         }
 
                         InUiThread(() =>
