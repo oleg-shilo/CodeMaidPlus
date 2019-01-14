@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -17,18 +18,24 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using Task = System.Threading.Tasks.Task;
 using Document = Microsoft.CodeAnalysis.Document;
 using Solution = Microsoft.CodeAnalysis.Solution;
 using DteDocument = EnvDTE.Document;
-using Newtonsoft.Json;
 
 namespace CMPlus
 {
     public class Settings
     {
+        [Description("All 'usings' are grouped and sorted alphabetically:\n using System.*\n using Microsoft.*\n " +
+                     "using <aliases>\n using <statics>")]
         public bool SortUsings { get; set; } = true;
+
+        [Description("Remove XML Documentation block trailing blank line.")]
         public bool RemoveXmlDocGaps { get; set; } = true;
+
+        [Description("Align indents so the nearest logical anchor.")]
         public bool AlignIndents { get; set; } = true;
     }
 

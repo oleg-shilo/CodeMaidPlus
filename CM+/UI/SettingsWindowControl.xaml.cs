@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,9 +16,11 @@ namespace CMPlus
     /// <summary>
     /// Interaction logic for SettingsWindowControl.
     /// </summary>
-    public partial class SettingsWindowControl : UserControl
+    public partial class SettingsWindowControl : UserControl, INotifyPropertyChanged
     {
         private object progressBar;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public class SettingsItem
         {
@@ -40,6 +44,7 @@ namespace CMPlus
             }
 
             public string Name { get; set; }
+            public string Description { get; set; }
 
             public override string ToString()
             {
@@ -62,8 +67,15 @@ namespace CMPlus
             typeof(Settings)
                 .GetProperties()
                 .Where(p => p.PropertyType == typeof(bool) && p.CanRead && p.CanWrite)
-                .Select(p => new SettingsItem { Enabled = (bool)p.GetValue(Runtime.Settings), Name = p.Name })
+                .Select(p => new SettingsItem
+                {
+                    Enabled = (bool)p.GetValue(Runtime.Settings),
+                    Name = p.Name,
+                    Description = p.GetCustomAttribute<DescriptionAttribute>()?.Description
+                })
                 .ForEach(this.Settings.Add);
+
+            this.featureSelector.SelectedItem = Settings.FirstOrDefault();
         }
 
         Window ParentWindow => this.FindParent<Window>();
@@ -75,7 +87,7 @@ namespace CMPlus
             {
                 // there is no way to adjust window size from the designer
                 hostWindow.Width = 600;
-                hostWindow.Height = 280;
+                hostWindow.Height = 420;
                 hostWindow.Closed += HostWindow_Closed;
             }
 
@@ -195,6 +207,19 @@ namespace CMPlus
             }
         }
 
+        string description;
+
+        public string Description
+        {
+            get => description;
+
+            set
+            {
+                description = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Description)));
+            }
+        }
+
         static void InUiThread(Action action) => Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, action);
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -211,6 +236,13 @@ namespace CMPlus
                     selectedDir.Text = "< error >";
                 }
             }
+        }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Description = featureSelector.SelectedItem
+                                         .CastTo<SettingsItem>()
+                                         .Description;
         }
     }
 }

@@ -33,6 +33,8 @@ namespace CMPlus
 
         public static bool IsEmpty(this string text) => string.IsNullOrEmpty(text);
 
+        public static T CastTo<T>(this object obj) => (T)obj;
+
         public static bool IsEmpty<TSource>(this IEnumerable<TSource> source) => source != null ? !source.Any() : true;
 
         public static bool Contains(this string text, string pattern, int position)

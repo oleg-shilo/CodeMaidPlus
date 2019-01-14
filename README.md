@@ -20,13 +20,21 @@ You just need to configure CodeMaid to invoke _CodeMaid+_ during cleanup (see _*
 The following formatting actions are performed during _CodeMaid+_ execution:
 
 ### Sorting using statements 
-CodeMaid invokes Visual Studio own 'remove and sort using statements'. If it is done on saving the document it can lead to the accidental loss of some of them. The problem is that VS does both removal and sorting. CodeMaid.Plus fixes this problem by not removing unused usings and still sorting and removing duplicates:
+CodeMaid invokes Visual Studio own 'remove and sort using statements'. If it is done on saving the document it can lead to the accidental loss of some of them. The problem is that VS does both removal and sorting. CodeMaid.Plus fixes this problem by not removing unused 'usings' and still sorting and removing duplicates.
+
+All 'usings' are grouped and all four groups are ordered as below. And all items within a given group are sorted alphabetically:
+```
+    using System.*
+    using Microsoft.*
+    using <aliases>
+    using <statics>
+```
 
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/using.before.png)
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/using.after.png)
 
 ### Fluent is not aligned
-CodeMaid/VS more relaxed indentation for fluent API is great but it may get accidentally misaligned and not even gain the first level of indent. CodeMaid+ fixes it by ensuring at lease one level of indentation:
+CodeMaid/VS more relaxed indentation for fluent API is great but it may get accidentally misaligned and not even gain the first level of indent. CodeMaid+ fixes it by ensuring at least one level of indentation:
 
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/indent-1.before.png)
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/indent-1.after.png)
