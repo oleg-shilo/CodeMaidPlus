@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using static CMPlus.IndentAligner;
 
 namespace CMPlus
 {
@@ -86,9 +89,15 @@ namespace CMPlus
             if (hostWindow != null)
             {
                 // there is no way to adjust window size from the designer
-                hostWindow.Width = 600;
-                hostWindow.Height = 420;
-                hostWindow.Closed += HostWindow_Closed;
+                hostWindow.Width = Runtime.Settings.WindowWidth;
+                hostWindow.Height = Runtime.Settings.WindowHeight;
+
+                hostWindow.Closing += (x, y) =>
+                {
+                    Runtime.Settings.WindowWidth = hostWindow.Width;
+                    Runtime.Settings.WindowHeight = hostWindow.Height;
+                    Runtime.Settings.Save();
+                };
             }
 
             dirSelector.SelectedItem = dirSelector.Items[0];
@@ -96,11 +105,6 @@ namespace CMPlus
             RefreshSettings();
 
             DataContext = this;
-        }
-
-        private void HostWindow_Closed(object sender, EventArgs e)
-        {
-            Runtime.Settings.Save();
         }
 
         public ObservableCollection<SettingsItem> Settings { get; set; } = new ObservableCollection<SettingsItem>();
@@ -212,13 +216,38 @@ namespace CMPlus
         public string Description
         {
             get => description;
-
-            set
-            {
-                description = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Description)));
-            }
+            set { description = value; PropChangeNotify(nameof(Description)); }
         }
+
+        string alignmentPreview;
+
+        public string AlignmentPreview
+        {
+            get => alignmentPreview;
+            set { alignmentPreview = value; PropChangeNotify(nameof(AlignmentPreview)); }
+        }
+
+        string alignmentInput = @"var lineScan = new LineScan
+{
+    LineNumber = text.LineNumber,
+   TimeScaned = text.TimeLoaded,
+    Scans = text.Positions
+                 .Where(p => p.Span != null &&
+                            p.State == LineState.Known)
+                  .Select(region => new RegionScan
+                    {
+                        Position = region.Position,
+                     Span = region.Span
+                    })
+};";
+
+        public string AlignmentInput
+        {
+            get => alignmentInput;
+            set { alignmentInput = value; PropChangeNotify(nameof(AlignmentInput)); }
+        }
+
+        void PropChangeNotify(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         static void InUiThread(Action action) => Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, action);
 
@@ -240,9 +269,35 @@ namespace CMPlus
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Description = featureSelector.SelectedItem
+            Description = featureSelector.SelectedItem?
                                          .CastTo<SettingsItem>()
                                          .Description;
+        }
+
+        private void Preview_Click(object sender, RoutedEventArgs e)
+        {
+            var changedLines = new Dictionary<int, string>();
+
+            AlignmentInput.GetSyntaxRoot()
+                          .AlignIndents((lineNumber, lineText) =>
+                                        {
+                                            if (changedLines.ContainsKey(lineNumber))
+                                                changedLines[lineNumber] += Environment.NewLine + lineText;
+                                            else
+                                                changedLines[lineNumber] = lineText;
+                                        });
+
+            var buffer = new StringBuilder();
+            var rawLines = AlignmentInput.GetLines();
+            for (int i = 0; i < rawLines.Length; i++)
+            {
+                if (changedLines.ContainsKey(i))
+                    buffer.AppendLine(changedLines[i]);
+                else
+                    buffer.AppendLine(rawLines[i]);
+            }
+
+            AlignmentPreview = buffer.ToString().Replace("\0", " ");
         }
     }
 }

@@ -73,7 +73,7 @@ namespace CMPlus.Tests
     { 3, 4 }
 }".GetSyntaxRoot();
 
-            var processedCode = code.AlignIndents(x => Debug.WriteLine(x))
+            var processedCode = code.AlignIndents((i, x) => Debug.WriteLine(x))
                                     .ToString()
                                     .GetLines();
 

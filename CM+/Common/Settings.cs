@@ -37,6 +37,9 @@ namespace CMPlus
 
         [Description("Align indents so the nearest logical anchor.")]
         public bool AlignIndents { get; set; } = true;
+
+        public double WindowWidth { get; set; } = 600;
+        public double WindowHeight { get; set; } = 420;
     }
 
     public static class CMSettings

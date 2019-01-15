@@ -94,6 +94,9 @@ namespace CMPlus
             return dir;
         }
 
+        public static string[] GetLines(this string text)
+            => text.Replace("\r\n", "\n").Split('\n');
+
         public static string GetDidName(this string path) => Path.GetDirectoryName(path);
     }
 

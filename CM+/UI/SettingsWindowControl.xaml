@@ -150,6 +150,7 @@
                         BorderThickness="1">
                         <TextBox
                             VerticalAlignment="Stretch"
+                            Background="WhiteSmoke"
                             IsReadOnly="True"
                             Text="{Binding Description}"
                             TextWrapping="Wrap"
@@ -157,7 +158,44 @@
                     </Border>
                 </Grid>
             </TabItem>
-            <TabItem Header="Alignment Preview" />
+            <TabItem Header="Alignment Preview">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="5" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Button
+                        Width="90"
+                        HorizontalAlignment="Right"
+                        Click="Preview_Click">
+                        Preview
+                    </Button>
+                    <TextBox
+                        Grid.Row="1"
+                        Margin="3"
+                        AcceptsReturn="True"
+                        FontFamily="Courier New"
+                        HorizontalScrollBarVisibility="Auto"
+                        Text="{Binding AlignmentInput}"
+                        VerticalScrollBarVisibility="Auto" />
+                    <GridSplitter
+                        Grid.Row="2"
+                        Height="5"
+                        HorizontalAlignment="Stretch" />
+                    <Border Grid.Row="3" BorderBrush="Gray">
+                        <TextBox
+                            AcceptsReturn="True"
+                            Background="WhiteSmoke"
+                            FontFamily="Courier New"
+                            HorizontalScrollBarVisibility="Auto"
+                            IsReadOnly="True"
+                            Text="{Binding AlignmentPreview, Mode=TwoWay}"
+                            VerticalScrollBarVisibility="Auto" />
+                    </Border>
+                </Grid>
+            </TabItem>
         </TabControl>
         <StackPanel
             Grid.RowSpan="3"

@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.Win32;
 using CMPlus;
 using Xunit;
 using AttributeData = Microsoft.CodeAnalysis.AttributeData;
-using Microsoft.CodeAnalysis.Text;
 
 namespace CMPlus.Tests
 {
@@ -124,7 +124,7 @@ var reagentsIdentified = new ReagentsIdentified
         {
             var root = code.GetSyntaxRoot();
 
-            root = root.AlignIndents(Console.WriteLine);
+            root = root.AlignIndents((a, x) => Console.WriteLine(x));
 
             var formattedText = root.ToFullString();
             return formattedText;

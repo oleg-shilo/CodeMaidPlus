@@ -8,7 +8,7 @@ namespace CMPlus
 {
     public static class IndentAligner
     {
-        public static SyntaxNode AlignIndents(this SyntaxNode root, Action<string> onLineVisualized = null)
+        public static SyntaxNode AlignIndents(this SyntaxNode root, Action<int, string> onLineVisualized = null)
         {
             if (Runtime.Settings.SortUsings)
                 root = new Aligner(onLineVisualized).AlignIndents(root);
@@ -19,10 +19,10 @@ namespace CMPlus
         class Aligner
         {
             static string singleIndent = "    ";
-            Action<string> onLineVisualized;
+            Action<int, string> onLineVisualized;
             IEnumerable<int> IndentPoints = new List<int>();
 
-            public Aligner(Action<string> onLineVisualized = null)
+            public Aligner(Action<int, string> onLineVisualized = null)
             {
                 this.onLineVisualized = onLineVisualized;
             }
@@ -50,12 +50,12 @@ namespace CMPlus
                                                .ToArray();
             }
 
-            void Output(string line)
+            void Output(int lineNumber, string line)
             {
                 if (onLineVisualized != null)
                 {
-                    onLineVisualized(line);
-                    onLineVisualized(VisualizeIndentPoints());
+                    onLineVisualized(lineNumber, line);
+                    onLineVisualized(lineNumber, VisualizeIndentPoints());
                 }
             }
 
@@ -109,7 +109,7 @@ namespace CMPlus
                             prevNonEmptyLine = (lines[lineNumber - 1].ToString());
 
                         UpdateIndentPointsFrom(prevNonEmptyLine);
-                        Output(prevNonEmptyLine);
+                        Output(lineNumber - 1, prevNonEmptyLine);
                     }
 
                     if (text.HasText())
@@ -140,7 +140,7 @@ namespace CMPlus
                                                       lineNumber,
                                                       currentIndent - bestIndent));
 
-                            Output(prevNonEmptyLine);
+                            Output(lineNumber, prevNonEmptyLine);
                             continue;
                         }
                     }
@@ -148,7 +148,7 @@ namespace CMPlus
                     prevNonEmptyLine = text;
                     UpdateIndentPointsFrom(prevNonEmptyLine);
 
-                    Output(prevNonEmptyLine);
+                    Output(lineNumber, prevNonEmptyLine);
                 }
 
                 // must be done in a single hit in order to avoid invalidating tokens during the run
