@@ -42,6 +42,23 @@ CodeMaid/VS more relaxed indentation for fluent API is great but it may get acci
 In case of more canonical Fluent pattern the original indentation stays untouched.
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/indent-2.after.png)
 
+_**Limitations**_
+Currently each line being aligned is handled independently by aligning its indent to the nearest anchor point.
+
+The alignment anchor points for a line are:
+- total indent of the previous line
+- total indent of the previous line + extra single indent
+- start of the special tokens in the previous line:
+  - '.' character
+  - '(' character
+  - "=>" 
+  - "=" 
+  - "return"
+  - ":"
+
+In the future releases the alignment adjustments applied to the text above the line being aligned will be incorporated. The will lead to more harmonious alignment outcome.
+
+
 ### XML Documentation block may contain trailing blank line
 
 A simple problem that is just overlooked by CodeMaid.
