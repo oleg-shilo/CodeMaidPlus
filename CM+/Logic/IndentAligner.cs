@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -63,6 +65,7 @@ namespace CMPlus
             {
                 string prevNonEmptyLine = null;
                 var lineInfo = new Dictionary<SyntaxToken, (SyntaxTrivia trivia, int line, int indentDelta)>();
+                var blockDeltas = new Dictionary<int, (int size, bool isExact)>();
 
                 var linesWithCode = root.DescendantTokens()
                                         .Where(x => x.HasLeadingTrivia &&
@@ -70,7 +73,7 @@ namespace CMPlus
 
                 var lines = root.GetText().Lines;
 
-                foreach (var startToken in linesWithCode)
+                foreach (SyntaxToken startToken in linesWithCode)
                 {
                     bool MatchingOpenTokenIndentFor(SyntaxKind closing, out int indent)
                     {
@@ -128,7 +131,65 @@ namespace CMPlus
                         else if (MatchingOpenTokenIndentFor(SyntaxKind.CloseParenToken, out indent))
                             bestIndent = indent;
                         else
-                            bestIndent = FindBestIndentAlignment(currentIndent, text, prevNonEmptyLine);
+                        {
+                            if (blockDeltas.ContainsKey(lineNumber))
+                            {
+                                var delta = blockDeltas[lineNumber];
+                                int blockAdjustedCurrentIndent = currentIndent - delta.size;
+
+                                if (delta.isExact)
+                                {
+                                    bestIndent = blockAdjustedCurrentIndent;
+                                }
+                                else
+                                {
+                                    bestIndent = FindBestIndentAlignment(blockAdjustedCurrentIndent,
+                                                                         text.SetIndentLength(blockAdjustedCurrentIndent),
+                                                                         prevNonEmptyLine);
+                                }
+                            }
+                            else
+                            {
+                                bestIndent = FindBestIndentAlignment(currentIndent, text, prevNonEmptyLine);
+                            }
+                        }
+
+                        if (startToken.IsKind(SyntaxKind.OpenBraceToken))
+                        {
+                            var node = startToken.Parent;
+                            var blockLines = node.ChildNodes()
+                                                 .Select(x => new
+                                                 {
+                                                     index = x.GetStartLineNumber(),
+                                                     text = lines[x.GetStartLineNumber()].ToString(),
+                                                     indent = lines[x.GetStartLineNumber()].ToString().GetIndentLength()
+                                                 });
+
+                            int prevLineDelta = 0;
+                            for (int i = blockLines.Min(x => x.index); i <= blockLines.Max(x => x.index); i++)
+                            {
+                                (int size, bool isExact) delta = (0, false);
+                                var info = blockLines.FirstOrDefault(x => x.index == i);
+                                if (info != null)
+                                {
+                                    var nextLineDesiredIndent = bestIndent + singleIndent.Length;
+                                    delta = (info.indent - nextLineDesiredIndent, true);
+                                }
+                                else
+                                    delta = (prevLineDelta, false);
+
+                                if (blockDeltas.ContainsKey(i) && !delta.isExact)
+                                {
+                                    var oldDelta = blockDeltas[i];
+                                    blockDeltas[i] = (oldDelta.size + delta.size, false);
+                                }
+                                else
+                                {
+                                    blockDeltas[i] = delta;
+                                }
+                                prevLineDelta = delta.Item1;
+                            }
+                        }
 
                         if (currentIndent != bestIndent)
                         {
@@ -260,6 +321,40 @@ namespace CMPlus
                 }
 
                 return indentPoints.Distinct();
+            }
+        }
+
+        public class DecoratedView
+        {
+            public string code;
+            Dictionary<int, string> changedLines = new Dictionary<int, string>();
+
+            public DecoratedView(string unchangedCode)
+            {
+                this.code = unchangedCode;
+            }
+
+            public void OnLineChanged(int lineNumber, string lineText)
+            {
+                if (changedLines.ContainsKey(lineNumber))
+                    changedLines[lineNumber] += Environment.NewLine + lineText;
+                else
+                    changedLines[lineNumber] = lineText;
+            }
+
+            public override string ToString()
+            {
+                var buffer = new StringBuilder();
+                var rawLines = code.GetLines();
+                for (int i = 0; i < rawLines.Length; i++)
+                {
+                    if (changedLines.ContainsKey(i))
+                        buffer.AppendLine(changedLines[i]);
+                    else
+                        buffer.AppendLine(rawLines[i]);
+                }
+
+                return buffer.ToString().Replace("\0", " ");
             }
         }
     }

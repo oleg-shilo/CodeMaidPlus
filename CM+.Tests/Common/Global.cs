@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.Win32;
 using CMPlus;
 using Xunit;
+using static CMPlus.IndentAligner;
 using AttributeData = Microsoft.CodeAnalysis.AttributeData;
 
 namespace CMPlus.Tests
@@ -35,7 +36,7 @@ namespace CMPlus.Tests
         static void Main()
         {
             TestAlignment();
-            //TestAlignment_();
+            // TestAlignment_();
             // TestFluent();
             // TestGaps();
         }
@@ -46,7 +47,39 @@ namespace CMPlus.Tests
             Console.WriteLine(AlignFluent(code));
         }
 
+        class ReagentLaneScan
+        {
+            public int LaneNumber;
+            public int TimeLoaded;
+            public int Reagents;
+        }
+
         static void TestAlignment()
+        {
+            var reagentLaneScan = new ReagentLaneScan
+            {
+                LaneNumber = 1,
+                TimeLoaded = 1,
+                Reagents = 1
+            };
+
+            AlignCode(@"
+   var reagentLaneScan = new ReagentLaneScan
+   {
+ LaneNumber = 1.ToString()
+               .Length.ToString(x=>
+                                {
+                                    Index = 7,
+                                    Count = 3
+                            })
+                      .Length,
+
+                                       TimeLoaded = 1,
+                              Reagents = 1
+                                    };");
+        }
+
+        static void TestAlignment2()
         {
             // Console.WriteLine(
             AlignCode(@"
@@ -122,9 +155,12 @@ var reagentsIdentified = new ReagentsIdentified
 
         static string AlignCode(string code)
         {
+            var changes = new DecoratedView(code);
             var root = code.GetSyntaxRoot();
 
-            root = root.AlignIndents((a, x) => Console.WriteLine(x));
+            root = root.AlignIndents(changes.OnLineChanged);
+
+            Console.WriteLine(changes);
 
             var formattedText = root.ToFullString();
             return formattedText;

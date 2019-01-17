@@ -12,7 +12,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-using static CMPlus.IndentAligner;
 
 namespace CMPlus
 {
@@ -276,28 +275,12 @@ namespace CMPlus
 
         private void Preview_Click(object sender, RoutedEventArgs e)
         {
-            var changedLines = new Dictionary<int, string>();
+            var resultCode = new IndentAligner.DecoratedView(AlignmentInput);
 
             AlignmentInput.GetSyntaxRoot()
-                          .AlignIndents((lineNumber, lineText) =>
-                                        {
-                                            if (changedLines.ContainsKey(lineNumber))
-                                                changedLines[lineNumber] += Environment.NewLine + lineText;
-                                            else
-                                                changedLines[lineNumber] = lineText;
-                                        });
+                          .AlignIndents(resultCode.OnLineChanged);
 
-            var buffer = new StringBuilder();
-            var rawLines = AlignmentInput.GetLines();
-            for (int i = 0; i < rawLines.Length; i++)
-            {
-                if (changedLines.ContainsKey(i))
-                    buffer.AppendLine(changedLines[i]);
-                else
-                    buffer.AppendLine(rawLines[i]);
-            }
-
-            AlignmentPreview = buffer.ToString().Replace("\0", " ");
+            AlignmentPreview = resultCode.ToString();
         }
     }
 }

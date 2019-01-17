@@ -45,6 +45,9 @@ namespace CMPlus
         }
 
         // processing only whitespaces
+        public static string SetIndentLength(this string text, int indentLength)
+            => new string(' ', indentLength) + text.TrimStart();
+
         public static int GetIndentLength(this string text) => text.TakeWhile(x => x == ' ' || x == '\t').Count();
 
         public static bool HasNoText(this string text) => string.IsNullOrWhiteSpace(text);
@@ -109,7 +112,10 @@ namespace CMPlus
             => node.GetText().Lines[line].ToString();
 
         public static int GetLineNumber(this SyntaxToken token)
-            => token.GetLocation().GetLineSpan().EndLinePosition.Line;
+            => token.GetLocation().GetLineSpan().StartLinePosition.Line;
+
+        public static int GetStartLineNumber(this SyntaxNode node)
+            => node.GetLocation().GetLineSpan().StartLinePosition.Line;
 
         public static int StartLinePositionCharacter(this SyntaxToken token)
             => token.GetLocation().GetLineSpan().StartLinePosition.Character;
