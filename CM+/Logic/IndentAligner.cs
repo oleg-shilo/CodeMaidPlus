@@ -165,29 +165,32 @@ namespace CMPlus
                                                      indent = lines[x.GetStartLineNumber()].ToString().GetIndentLength()
                                                  });
 
-                            int prevLineDelta = 0;
-                            for (int i = blockLines.Min(x => x.index); i <= blockLines.Max(x => x.index); i++)
+                            if (blockLines.Any()) // it can be empty block like in empty try..catch statement
                             {
-                                (int size, bool isExact) delta = (0, false);
-                                var info = blockLines.FirstOrDefault(x => x.index == i);
-                                if (info != null)
+                                int prevLineDelta = 0;
+                                for (int i = blockLines.Min(x => x.index); i <= blockLines.Max(x => x.index); i++)
                                 {
-                                    var nextLineDesiredIndent = bestIndent + singleIndent.Length;
-                                    delta = (info.indent - nextLineDesiredIndent, true);
-                                }
-                                else
-                                    delta = (prevLineDelta, false);
+                                    (int size, bool isExact) delta = (0, false);
+                                    var info = blockLines.FirstOrDefault(x => x.index == i);
+                                    if (info != null)
+                                    {
+                                        var nextLineDesiredIndent = bestIndent + singleIndent.Length;
+                                        delta = (info.indent - nextLineDesiredIndent, true);
+                                    }
+                                    else
+                                        delta = (prevLineDelta, false);
 
-                                if (blockDeltas.ContainsKey(i) && !delta.isExact)
-                                {
-                                    var oldDelta = blockDeltas[i];
-                                    blockDeltas[i] = (oldDelta.size + delta.size, false);
+                                    if (blockDeltas.ContainsKey(i) && !delta.isExact)
+                                    {
+                                        var oldDelta = blockDeltas[i];
+                                        blockDeltas[i] = (oldDelta.size + delta.size, false);
+                                    }
+                                    else
+                                    {
+                                        blockDeltas[i] = delta;
+                                    }
+                                    prevLineDelta = delta.Item1;
                                 }
-                                else
-                                {
-                                    blockDeltas[i] = delta;
-                                }
-                                prevLineDelta = delta.Item1;
                             }
                         }
 

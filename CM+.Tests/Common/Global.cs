@@ -35,8 +35,8 @@ namespace CMPlus.Tests
     {
         static void Main()
         {
-            TestAlignment();
-            // TestAlignment_();
+            // TestAlignment();
+            TestAlignment_();
             // TestFluent();
             // TestGaps();
         }
@@ -70,7 +70,8 @@ namespace CMPlus.Tests
                .Length.ToString(x=>
                                 {
                                     Index = 7,
-                                    Count = 3
+                                    Count = 3,
+                    Items = { 1, 2, 3}
                             })
                       .Length,
 
@@ -160,7 +161,7 @@ var reagentsIdentified = new ReagentsIdentified
 
             root = root.AlignIndents(changes.OnLineChanged);
 
-            Console.WriteLine(changes);
+            // Console.WriteLine(changes);
 
             var formattedText = root.ToFullString();
             return formattedText;
