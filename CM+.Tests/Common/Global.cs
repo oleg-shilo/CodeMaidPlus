@@ -14,55 +14,124 @@ using AttributeData = Microsoft.CodeAnalysis.AttributeData;
 
 namespace CMPlus.Tests
 {
-    public class TestBase
-    {
-        static TestBase()
-        {
-            Runtime.Settings = new Settings { AlignIndents = true, RemoveXmlDocGaps = true, SortUsings = true };
-        }
-    }
-
-    public static class Global
-    {
-        public static SyntaxNode GetSyntaxRoot(this string code)
-            => CSharpSyntaxTree.ParseText(code).GetRoot();
-
-        public static string[] GetLines(this string text)
-            => text.Replace("\r\n", "\n").Split('\n');
-    }
-
     class Program
     {
         static void Main()
         {
+            TestAlignment4();
             // TestAlignment();
-            TestAlignment_();
+            // TestAlignment_();
             // TestFluent();
             // TestGaps();
         }
 
-        static void TestFluent()
+        static void AlignFile(string before, string after)
         {
-            var code = File.ReadAllText(@"..\..\Common\TestClassA.cs");
-            Console.WriteLine(AlignFluent(code));
+            var formattedText = File.ReadAllText(before)
+                                    .GetSyntaxRoot()
+                                    .AlignIndents()
+                                    .ToString();
+
+            File.WriteAllText(after, formattedText);
         }
 
-        class ReagentLaneScan
+        static void TestAlignment6()
         {
-            public int LaneNumber;
-            public int TimeLoaded;
-            public int Reagents;
+            FormatCode(@"
+{
+    public IReadOnlyList<ScenarioInfo> FindScenarios(ScenarioDetail detailLevel)
+    {
+        var allScenarios = _scenarios.Values
+            .Where(a => detailLevel >= a.DetailLevel)
+            .OrderBy(a => a.DetailLevel)
+            .ToArray();
+
+        if (allScenarios.Select(a => a.Name).Distinct().Count() != allScenarios.Length)
+        {
+            throw new InvalidOperationException(
+                $@""Some scenarios have duplicate names: {
+                        string.Join("", "",
+                            allScenarios.GroupBy(a => a.Name)
+                                .Where(a => a.Count() > 1)
+                                .Select(a => a.Key))
+                    }"");
+        }
+        return allScenarios;
+    }
+}");
+        }
+
+        static void TestAlignment5()
+        {
+            FormatCode(@"
+public OptimiserAction Create(SlideArea location)
+{
+    var message = $@""Error: {
+                1.ToString().
+   Length}"";
+
+    var arr = new int[]{
+                 1,2,3
+    };
+
+    var parameters = new List<Parameter>{
+         _locationParameter.WithValue((ushort)(location == SlideArea.OutputDrawer ? 1 : 0))
+    }
+
+      var parameters = new List<Parameter>{
+         _locationParameter.WithValue((ushort)(location == SlideArea.OutputDrawer ? 1 : 0))
+    }
+};");
         }
 
         static void TestAlignment()
         {
-            var reagentLaneScan = new ReagentLaneScan
-            {
-                LaneNumber = 1,
-                TimeLoaded = 1,
-                Reagents = 1
-            };
+            AlignCode(@"
+public void ScheduleScanIfNeeded()
+{
+    _diagnosticLogger.Log(
+        LogEventLevel.Verbose,
+        ""CameraScheduleController AwaitingScanResults = {0}"",
+       _store.Camera.AwaitingScanResults);
+}");
+        }
 
+        static void TestAlignment4()
+        {
+            AlignCode(@"
+static void Main()
+{
+    var project =
+        new Project(""MyProduct"",
+                  new Dir(@""%ProgramFiles%\My Company\My Product"",
+                      new File(""Program.cs"")),
+                          new ManagedAction(CustomActions.MyAction));
+
+    project.UI = WUI.WixUI_ProgressOnly;
+    project.BuildMsi();
+}");
+        }
+
+        static void TestAlignment2()
+        {
+            AlignCode(@"
+{
+    public static Plan Create(
+    {
+            if (plannedResources.Any())
+            {
+                if (incompleteActions.Any())
+                    throw new ArgumentException(
+                        $@""The following actions were not planned correctly: {
+                                string.Join(""\n"", incompleteActions.Select(a => a.ToString()))
+                            }"");
+            }
+    }
+}");
+        }
+
+        static void TestAlignment1()
+        {
             AlignCode(@"
    var reagentLaneScan = new ReagentLaneScan
    {
@@ -80,26 +149,12 @@ namespace CMPlus.Tests
                                     };");
         }
 
-        static void TestAlignment2()
+        static void TestAlignment3()
         {
-            // Console.WriteLine(
             AlignCode(@"
-[assembly: InternalsVisibleTo(""InstrumentControl.Proxy.Tests""),
-           InternalsVisibleTo(""DynamicProxyGenAssembly2""),
-           InternalsVisibleTo(""TATSimulator"")]
-    var map = new Dictionary<int, int>
-    {
-        {1, 2},
-         {3, 4}
-    }
 
 var reagentsIdentified = new ReagentsIdentified
 {
-    Console.WriteLine(
-                       1,
-                       2
-                );
-
     Lanes = racks.Select(
         rack =>
         {
@@ -120,24 +175,16 @@ var reagentsIdentified = new ReagentsIdentified
         }).ToList()
 }
 
-            "//)
-                     ); ;
-            //             Console.WriteLine(AlignCode(@"
-            //     enum Test
-            //     {
-            //         one,
-            //         two
-            //     }
-
-            // ")); return;
-            // Console.WriteLine(AlignCode(File.ReadAllText(@"..\..\Common\TestClassB.cs"))); return;
+            "
+                     );
         }
 
         static void TestAlignment_()
         {
+            printOut = false;
             var utf8WithBom = new System.Text.UTF8Encoding(true);
 
-            var files = Directory.GetFiles(@"D:\dev\TMS\taipan-app-master\DomainControl", "*.cs", SearchOption.AllDirectories);
+            var files = Directory.GetFiles("DomainControl", "*.cs", SearchOption.AllDirectories);
             var count = 0;
             foreach (var file in files)
             {
@@ -154,6 +201,8 @@ var reagentsIdentified = new ReagentsIdentified
             }
         }
 
+        static bool printOut = true;
+
         static string AlignCode(string code)
         {
             var changes = new DecoratedView(code);
@@ -161,9 +210,20 @@ var reagentsIdentified = new ReagentsIdentified
 
             root = root.AlignIndents(changes.OnLineChanged);
 
-            // Console.WriteLine(changes);
+            if (printOut)
+                Console.WriteLine(changes);
 
             var formattedText = root.ToFullString();
+            return formattedText;
+        }
+
+        static string FormatCode(string code)
+        {
+            var root = code.GetSyntaxRoot()
+                           .FixBrackets();
+
+            var formattedText = root.ToString();
+            Console.WriteLine(formattedText);
             return formattedText;
         }
 
@@ -261,5 +321,28 @@ var reagentsIdentified = new ReagentsIdentified
             for (int i = 0; i < root.GetText().Lines.Count; i++)
                 Console.WriteLine($"{i}: {root.GetText().Lines[i]}");
         }
+
+        static void TestFluent()
+        {
+            var code = File.ReadAllText(@"..\..\Common\TestClassA.cs");
+            Console.WriteLine(AlignFluent(code));
+        }
+    }
+
+    public class TestBase
+    {
+        static TestBase()
+        {
+            Runtime.Settings = new Settings { AlignIndents = true, RemoveXmlDocGaps = true, SortUsings = true };
+        }
+    }
+
+    public static class Global
+    {
+        public static SyntaxNode GetSyntaxRoot(this string code)
+            => CSharpSyntaxTree.ParseText(code).GetRoot();
+
+        public static string[] GetLines(this string text)
+            => text.Replace("\r\n", "\n").Split('\n');
     }
 }

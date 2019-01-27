@@ -44,23 +44,23 @@ namespace CMPlus.Tests
 
     public class IndentAligner : TestBase
     {
-        [Fact(Skip = "The functionality is not implemented yet")]
+        [Fact]
         public void Align_BracesBock()
         {
-            var code =
-@" var map = new Dictionary<int, int>
- {
-    { 1, 2 },
-                 { 3, 4 }
- }".GetSyntaxRoot();
+            var code = @"
+    var map = new Dictionary<int, int>
+    {
+         { 1, 2 },
+          { 3, 4 }
+     }".GetSyntaxRoot();
             var processedCode = code.AlignIndents()
                                     .ToString()
                                     .GetLines();
 
-            Assert.Equal(" {", processedCode[1]);
-            Assert.Equal("     { 1, 2 },", processedCode[2]);
-            Assert.Equal("     { 3, 4 }", processedCode[3]);
-            Assert.Equal(" }", processedCode[4]);
+            Assert.Equal("    {", processedCode[1]);
+            Assert.Equal("        { 1, 2 },", processedCode[2]);
+            Assert.Equal("        { 3, 4 }", processedCode[3]);
+            Assert.Equal("    }", processedCode[4]);
         }
 
         [Fact]
@@ -84,6 +84,55 @@ namespace CMPlus.Tests
         }
 
         [Fact]
+        public void Should_Allow_Args_PartialAlignment()
+        {
+            var code =
+@"
+class Test
+{
+    void Test()
+    {
+        var project = new Project(""Test"",
+                          new File(""file.txt""));
+    }
+}".GetSyntaxRoot();
+
+            var processedCode = code.AlignIndents((i, x) => Debug.WriteLine(x))
+                                    .ToString()
+                                    .GetLines();
+
+            Assert.Equal("        var project = new Project(\"Test\",", processedCode[4]);
+            Assert.Equal("                          new File(\"file.txt\"));", processedCode[5]);
+        }
+
+        [Fact]
+        public void Ignore_Intepolation()
+        {
+            var code =
+@"
+class Test
+{
+    if (allScenarios.Select(a => a.Name).Distinct().Count() != allScenarios.Length)
+    {
+        throw new InvalidOperationException(
+            $@""Some scenarios have duplicate names: {
+                    string.Join("", "",
+                        allScenarios.GroupBy(a => a.Name)
+                            .Where(a => a.Count() > 1)
+                            .Select(a => a.Key))
+                }"");
+    }
+}".GetSyntaxRoot();
+
+            var processedCode = code.AlignIndents((i, x) => Debug.WriteLine(x))
+                                    .ToString()
+                                    .GetLines();
+
+            // line 5 is the same as before formatting
+            Assert.Equal("                    string.Join(\", \",", processedCode[6]);
+        }
+
+        [Fact]
         public void Align_Attributes()
         {
             var code = @"
@@ -98,6 +147,52 @@ namespace CMPlus.Tests
             Assert.Equal("[assembly: AssemblyInformationalVersion(\"0.0.0.0\")]", processedCode[0]);
             Assert.Equal("[assembly: InternalsVisibleTo(\"Infrastructure.Tests\"),", processedCode[1]);
             Assert.Equal("           InternalsVisibleTo(\"TATSimulator\")]", processedCode[2]);
+        }
+
+        [Fact]
+        public void Should_Ignore_IndentPoints_InStrings()
+        {
+            var code =
+                @"
+void Test()
+{
+         new Exception($@""Some scenarios .have duplicate names: {
+                                  string.Join("", "",
+                                      allScenarios.GroupBy(a => a.Name)
+                                          .Where(a => a.Count() > 1)
+                                          .Select(a => a.Key))
+                    }"");
+}
+".GetSyntaxRoot();
+
+            var processedCode = code.AlignIndents()
+                                    .ToString()
+                                    .GetLines();
+
+            Assert.Equal("                                  string.Join(\", \",", processedCode[3]);
+        }
+
+        [Fact]
+        public void Should_Keep_ConditionalExprtesions_Aligned()
+        {
+            var code =
+                @"
+class Test
+{
+    void Test()
+    {
+          var resourceConfig = schedulerConfiguration.ResourceConfiguration
+                                ?? new TaipanResourceModelConfiguration();
+    }
+}
+".GetSyntaxRoot();
+
+            var processedCode = code.AlignIndents()
+                                    .ToString()
+                                    .GetLines();
+
+            Assert.Equal("        var resourceConfig = schedulerConfiguration.ResourceConfiguration", processedCode[4]);
+            Assert.Equal("                             ?? new TaipanResourceModelConfiguration();", processedCode[5]);
         }
     }
 }

@@ -26,20 +26,38 @@ using DteDocument = EnvDTE.Document;
 
 namespace CMPlus
 {
+    class ImageAttribute : Attribute
+    {
+        public string Uri;
+
+        public ImageAttribute(string uri) => Uri = uri;
+    }
+
     public class Settings
     {
-        [Description("All 'usings' are grouped and sorted alphabetically:\n using System.*\n using Microsoft.*\n " +
-                     "using <aliases>\n using <statics>")]
+        [Image("/CM+;component/Resources/using.{when}.png")]
+        [Description("All 'usings' are grouped and sorted alphabetically: using System.* | using Microsoft.* | " +
+                     "using <aliases> | using <statics>")]
         public bool SortUsings { get; set; } = true;
 
+        [Image("/CM+;component/Resources/doc.{when}.png")]
         [Description("Remove XML Documentation block trailing blank line.")]
         public bool RemoveXmlDocGaps { get; set; } = true;
 
+        [Image("/CM+;component/Resources/indent-1.{when}.png")]
         [Description("Align indents so the nearest logical anchor.")]
         public bool AlignIndents { get; set; } = true;
 
-        public double WindowWidth { get; set; } = 600;
-        public double WindowHeight { get; set; } = 420;
+        [Image("/CM+;component/Resources/brackets.{when}.png")]
+        [Description("Fix \"Egyptian brackets\" in cases that are not handled by CodeMaid.")]
+        public bool FixBrackets { get; set; } = true;
+
+        [Image("")]
+        [Description("Do not process code in the string interpolation expressions.")]
+        public bool DoNotAlignInterpolation { get; set; } = true;
+
+        public double WindowWidth { get; set; } = 950;
+        public double WindowHeight { get; set; } = 550;
     }
 
     public static class CMSettings

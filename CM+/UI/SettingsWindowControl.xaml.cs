@@ -47,6 +47,7 @@ namespace CMPlus
 
             public string Name { get; set; }
             public string Description { get; set; }
+            public string ImageUri { get; set; }
 
             public override string ToString()
             {
@@ -73,11 +74,30 @@ namespace CMPlus
                 {
                     Enabled = (bool)p.GetValue(Runtime.Settings),
                     Name = p.Name,
-                    Description = p.GetCustomAttribute<DescriptionAttribute>()?.Description
+                    Description = p.GetCustomAttribute<DescriptionAttribute>()?.Description,
+                    ImageUri = p.GetCustomAttribute<ImageAttribute>()?.Uri,
                 })
                 .ForEach(this.Settings.Add);
 
             this.featureSelector.SelectedItem = Settings.FirstOrDefault();
+        }
+
+        public static DependencyProperty ImageBeforeProperty =
+            DependencyProperty.Register(nameof(ImageBefore), typeof(string), typeof(SettingsWindowControl));
+
+        public string ImageBefore
+        {
+            get => (string)GetValue(ImageBeforeProperty);
+            set => SetValue(ImageBeforeProperty, value);
+        }
+
+        public static DependencyProperty ImageAfterProperty =
+            DependencyProperty.Register(nameof(ImageAfter), typeof(string), typeof(SettingsWindowControl));
+
+        public string ImageAfter
+        {
+            get { return (string)GetValue(ImageAfterProperty); }
+            set { SetValue(ImageAfterProperty, value); }
         }
 
         Window ParentWindow => this.FindParent<Window>();
@@ -88,8 +108,12 @@ namespace CMPlus
             if (hostWindow != null)
             {
                 // there is no way to adjust window size from the designer
+                // the initial size of hostWindow is defined by the Runtime.Settings.Window.* defaults
+
                 hostWindow.Width = Runtime.Settings.WindowWidth;
                 hostWindow.Height = Runtime.Settings.WindowHeight;
+
+                hostWindow.Deactivated += (x, y) => Runtime.Settings.Save();
 
                 hostWindow.Closing += (x, y) =>
                 {
@@ -186,7 +210,7 @@ namespace CMPlus
 
                             var root = code.GetSyntaxRoot();
 
-                            var formattedCode = root.AlignIndents().ToFullString();
+                            var formattedCode = FormatCommand.Process(root).ToFullString();
 
                             if (code != formattedCode)
                                 File.WriteAllText(file, formattedCode, utf8WithBom);
@@ -271,6 +295,14 @@ namespace CMPlus
             Description = featureSelector.SelectedItem?
                                          .CastTo<SettingsItem>()
                                          .Description;
+
+            var image = featureSelector.SelectedItem?
+                                         .CastTo<SettingsItem>()
+                                         .ImageUri;
+
+            // "/CM+;component/Resources/using.{when}.png";
+            ImageBefore = image?.Replace("{when}", "before");
+            ImageAfter = image?.Replace("{when}", "after");
         }
 
         private void Preview_Click(object sender, RoutedEventArgs e)

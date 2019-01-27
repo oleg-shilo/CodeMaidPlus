@@ -13,6 +13,16 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
 using Task = System.Threading.Tasks.Task;
 
+// todo
+// - filter non C# docs
+// - refactoring and documenting
+// - Alignment refining:
+//   - WixSharp: media.cs
+//   - WixSharp: wixbinlocator.cs
+//   - WixSharp: managedproject.cs
+//   - WixSharp: customui.cs
+//   - WixSharp: control.cs
+
 namespace CMPlus
 {
     /// <summary>

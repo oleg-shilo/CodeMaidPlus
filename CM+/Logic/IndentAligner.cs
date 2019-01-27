@@ -12,7 +12,7 @@ namespace CMPlus
     {
         public static SyntaxNode AlignIndents(this SyntaxNode root, Action<int, string> onLineVisualized = null)
         {
-            if (Runtime.Settings.SortUsings)
+            if (Runtime.Settings.AlignIndents)
                 root = new Aligner(onLineVisualized).AlignIndents(root);
 
             return root;
@@ -40,13 +40,13 @@ namespace CMPlus
                 return new string(text);
             }
 
-            void UpdateIndentPointsFrom(string line)
+            void UpdateIndentPointsFrom(string line, SyntaxToken lineStartToken)
             {
                 if (IndentPoints.IsEmpty() && line.IsEmpty())
                     IndentPoints = new[] { 0, singleIndent.Length };
                 else
                     IndentPoints = IndentPoints.Where(x => x < line.GetIndentLength())
-                                               .Concat(FindIndentPoints(line))
+                                               .Concat(FindIndentPoints(line, lineStartToken))
                                                .Distinct()
                                                .OrderBy(x => x)
                                                .ToArray();
@@ -71,7 +71,12 @@ namespace CMPlus
                                         .Where(x => x.HasLeadingTrivia &&
                                                     x.LeadingTrivia.Any(y => y.IsKind(SyntaxKind.WhitespaceTrivia)));
 
+                if (Runtime.Settings.DoNotAlignInterpolation)
+                    linesWithCode = linesWithCode.Where(x => !x.Parent.IsKind(SyntaxKind.Interpolation));
+
                 var lines = root.GetText().Lines;
+
+                SyntaxToken prevStartToken = root.GetFirstToken();
 
                 foreach (SyntaxToken startToken in linesWithCode)
                 {
@@ -109,14 +114,22 @@ namespace CMPlus
                     if (IndentPoints.IsEmpty())
                     {
                         if (prevNonEmptyLine.IsEmpty() && lines.Count > lineNumber)
+                        {
+                            prevStartToken = root.DescendantTokens().FirstOrDefault(x => x.GetLineNumber() == lineNumber - 1);
                             prevNonEmptyLine = (lines[lineNumber - 1].ToString());
+                        }
 
-                        UpdateIndentPointsFrom(prevNonEmptyLine);
+                        UpdateIndentPointsFrom(prevNonEmptyLine, prevStartToken);
                         Output(lineNumber - 1, prevNonEmptyLine);
                     }
 
                     if (text.HasText())
                     {
+                        bool lookForBestAlignment = true;
+
+                        if (Runtime.Settings.DoNotAlignInterpolation && startToken.IsPartOfInterpolationExpression())
+                            lookForBestAlignment = false;
+
                         int currentIndent = text.GetIndentLength();
 
                         if (currentIndent == 0)
@@ -126,11 +139,22 @@ namespace CMPlus
 
                         // startToken is a closing token, which has matching opening token
                         // on a different line. This is because the closing token is the first token in the line.
-                        if (MatchingOpenTokenIndentFor(SyntaxKind.CloseBraceToken, out int indent))
-                            bestIndent = indent;
-                        else if (MatchingOpenTokenIndentFor(SyntaxKind.CloseParenToken, out indent))
-                            bestIndent = indent;
-                        else
+                        var processedAsBlockContent = false;
+                        if (lookForBestAlignment)
+                        {
+                            if (MatchingOpenTokenIndentFor(SyntaxKind.CloseBraceToken, out int indent))
+                            {
+                                bestIndent = indent;
+                                processedAsBlockContent = true;
+                            }
+                            else if (MatchingOpenTokenIndentFor(SyntaxKind.CloseParenToken, out indent))
+                            {
+                                bestIndent = indent;
+                                processedAsBlockContent = true;
+                            }
+                        }
+
+                        if (!processedAsBlockContent)
                         {
                             if (blockDeltas.ContainsKey(lineNumber))
                             {
@@ -143,18 +167,21 @@ namespace CMPlus
                                 }
                                 else
                                 {
-                                    bestIndent = FindBestIndentAlignment(blockAdjustedCurrentIndent,
-                                                                         text.SetIndentLength(blockAdjustedCurrentIndent),
-                                                                         prevNonEmptyLine);
+                                    if (lookForBestAlignment)
+                                        bestIndent = FindBestIndentAlignment(blockAdjustedCurrentIndent,
+                                                                       text.SetIndentLength(blockAdjustedCurrentIndent),
+                                                                       prevNonEmptyLine);
                                 }
                             }
                             else
                             {
-                                bestIndent = FindBestIndentAlignment(currentIndent, text, prevNonEmptyLine);
+                                if (lookForBestAlignment)
+                                    bestIndent = FindBestIndentAlignment(currentIndent, text, prevNonEmptyLine);
                             }
                         }
 
-                        if (startToken.IsKind(SyntaxKind.OpenBraceToken))
+                        if ((startToken.IsKind(SyntaxKind.OpenBraceToken) || startToken.IsKind(SyntaxKind.OpenParenToken))
+                            && !startToken.IsPartOfInterpolationExpression())
                         {
                             var node = startToken.Parent;
                             var blockLines = node.ChildNodes()
@@ -197,8 +224,11 @@ namespace CMPlus
                         if (currentIndent != bestIndent)
                         {
                             var newItemIndent = new string(' ', bestIndent);
+
                             prevNonEmptyLine = newItemIndent + text.TrimStart();
-                            UpdateIndentPointsFrom(prevNonEmptyLine);
+                            prevStartToken = startToken;
+
+                            UpdateIndentPointsFrom(prevNonEmptyLine, prevStartToken);
 
                             lineInfo.Add(startToken, (SyntaxFactory.Whitespace(newItemIndent),
                                                       lineNumber,
@@ -210,7 +240,8 @@ namespace CMPlus
                     }
 
                     prevNonEmptyLine = text;
-                    UpdateIndentPointsFrom(prevNonEmptyLine);
+                    prevStartToken = startToken;
+                    UpdateIndentPointsFrom(prevNonEmptyLine, prevStartToken);
 
                     Output(lineNumber, prevNonEmptyLine);
                 }
@@ -261,14 +292,19 @@ namespace CMPlus
                 var pointBefore = pointsBefore.Last();
                 var pointAfter = IndentPoints.ToArray()[pointsBefore.Count()];
 
-                if ((currentIndent - pointBefore) >= singleIndent.Length / 2)
+                if ((currentIndent - pointBefore) >= (pointAfter - currentIndent))
                     return pointAfter;
                 else
                     return pointBefore;
             }
 
-            IEnumerable<int> FindIndentPoints(string text)
+            IEnumerable<int> FindIndentPoints(string text, SyntaxToken startToken)
             {
+                SyntaxNode root = startToken.SyntaxTree?.GetRoot();
+
+                var rawIndent = startToken.StartLinePositionCharacter();
+                var actualIndent = text.GetIndentLength();
+
                 text = text.TrimEnd();
 
                 var indentPoints = new List<int>();
@@ -276,52 +312,103 @@ namespace CMPlus
                 indentPoints.Add(text.GetIndentLength());
                 indentPoints.Add(text.GetIndentLength() + singleIndent.Length);
 
+                int pointToPosition(int point)
+                {
+                    var indentDelta = actualIndent - rawIndent;
+                    return (point - actualIndent) - indentDelta + startToken.Span.Start;
+                }
+
                 for (int i = 0; i < text.Length; i++)
                 {
+                    bool isValid()
+                    {
+                        if (startToken.SyntaxTree != null)
+                        {
+                            // verify that the points are not part of a string
+                            // position          500
+                            // raw               5
+                            // actual    0     4      8
+                            //           .     . |    .
+                            //                 n e w  E x c...
+                            var pos = pointToPosition(i);
+
+                            if (root.GetTokenFromPosition(pos)?.IsValidIndentCandidateToken() == false)
+                                return false;
+                        }
+                        return true;
+                    }
+
                     if (text[i] == '.')
                     {
                         // capture all de-referencings
-                        indentPoints.Add(i);
+                        if (isValid())
+                            indentPoints.Add(i);
                     }
                     else if (text[i] == '(')
                     {
                         // the first position of the argument (in the future can be a part of "arg list alignment")
-                        indentPoints.Add(i + 1);
+                        if (isValid())
+                            indentPoints.Add(i + 1);
                     }
-                    else if (text.Contains("=> ", i - 3)
-                             || text.Contains("= ", i - 2)
-                             || text.Contains("return ", i - 7)
-                             || text.Contains(": ", i - 2))
+                    else if (text.EndWith(i, "=> ") ||
+                             text.EndWith(i, "= ") ||
+                             text.EndWith(i, "return ") ||
+                             text.EndWith(i, ": ") ||
+                             (i >= 1 && text.IsWhiteSpace(i - 1) &&
+                                       !text.IsWhiteSpace(i)))
                     {
                         // the position of the first element in the lambs expression
-                        indentPoints.Add(i);
+                        if (isValid())
+                            indentPoints.Add(i);
                     }
                     if (text.EndsWith("("))
                     {
                         // prev statement is completed
-                        indentPoints.Add(text.Length);
+                        if (isValid())
+                            indentPoints.Add(text.Length);
                     }
                     else if (text[i] == '{')
                     {
-                        if (i != text.Length - 1)
+                        if (isValid())
                         {
-                            // the first indent of the block
-                            indentPoints.Add(i);
+                            if (i != text.Length - 1)
+                            {
+                                // the first indent of the block
+                                indentPoints.Add(i);
+                            }
+
+                            // should not remove as it will create problem with dictionary declaration:
+                            // new Dictionary<int, int>
+                            // {
+                            //     { 1, 2},
+                            //     { 3, 4}
+                            // }
+
+                            // and the next indent in the block
+                            indentPoints.Add(i + singleIndent.Length);
                         }
-
-                        // should not remove as it will create problem with dictionary declaration:
-                        // new Dictionary<int, int>
-                        // {
-                        //     { 1, 2},
-                        //     { 3, 4}
-                        // }
-                        // see D:\dev\TMS\taipan-app-master\DomainControl\Common\Models\InputSlideDrawer.cs
-                        // indentPoints.Remove(i);
-
-                        // and the next indent in the block
-                        indentPoints.Add(i + singleIndent.Length);
+                        else
+                        {
+                        }
                     }
                 }
+
+                // if (startToken.SyntaxTree != null)
+                // {
+                //     foreach (int i in indentPoints.ToArray())
+                //     {
+                //         int pointPosition = (i - actualIndent) - indentDelta + startToken.Span.Start;
+                //         var tokenOfPoint = root.GetTokenFromPosition(pointPosition - 1);
+
+                //         // still allow start content
+                //         bool valid = tokenOfPoint.IsKind(SyntaxKind.InterpolatedStringStartToken) ||
+                //                      tokenOfPoint.IsKind(SyntaxKind.InterpolatedVerbatimStringStartToken) ||
+                //                      !tokenOfPoint.IsStringContentToken();
+
+                //         if (!valid)
+                //             indentPoints.Remove(i);
+                //     }
+                // }
 
                 return indentPoints.Distinct();
             }

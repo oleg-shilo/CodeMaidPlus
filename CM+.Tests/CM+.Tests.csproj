@@ -59,6 +59,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BlankLinesCleaner.cs" />
+    <Compile Include="BracketsNormalizer.cs" />
     <Compile Include="Common\Global.cs" />
     <None Include="Common\TestClassB.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

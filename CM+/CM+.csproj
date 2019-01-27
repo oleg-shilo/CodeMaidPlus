@@ -63,13 +63,13 @@
     <Compile Include="FormatCommand.cs" />
     <Compile Include="FormatCommandPackage.cs" />
     <Compile Include="Common\Global.cs" />
+    <Compile Include="Logic\BracketsNormalizer.cs" />
     <Compile Include="Logic\FluentAligner.cs" />
     <Compile Include="Logic\IndentAligner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Logic\UsingsSorter.cs" />
     <Compile Include="SettingsWindow.cs" />
     <Compile Include="SettingsWindowCommand.cs" />
-    <Compile Include="Logic\Settings.cs" />
     <Compile Include="UI\SettingsWindowControl.xaml.cs">
       <DependentUpon>SettingsWindowControl.xaml</DependentUpon>
     </Compile>
@@ -85,6 +85,30 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="..\images\doc.after.png">
+      <Link>Resources\doc.after.png</Link>
+    </Resource>
+    <Resource Include="..\images\doc.before.png">
+      <Link>Resources\doc.before.png</Link>
+    </Resource>
+    <Resource Include="..\images\indent-1.after.png">
+      <Link>Resources\indent-1.after.png</Link>
+    </Resource>
+    <Resource Include="..\images\indent-1.before.png">
+      <Link>Resources\indent-1.before.png</Link>
+    </Resource>
+    <Resource Include="..\images\using.after.png">
+      <Link>Resources\using.after.png</Link>
+    </Resource>
+    <Resource Include="..\images\using.before.png">
+      <Link>Resources\using.before.png</Link>
+    </Resource>
+    <Resource Include="..\images\brackets.after.png">
+      <Link>Resources\brackets.after.png</Link>
+    </Resource>
+    <Resource Include="..\images\brackets.before.png">
+      <Link>Resources\brackets.before.png</Link>
+    </Resource>
     <Content Include="licence.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

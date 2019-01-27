@@ -11,17 +11,6 @@ using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.LanguageServices;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Win32;
-using Task = System.Threading.Tasks.Task;
-using Document = Microsoft.CodeAnalysis.Document;
-using Solution = Microsoft.CodeAnalysis.Solution;
-using DteDocument = EnvDTE.Document;
 
 namespace CMPlus
 {
@@ -42,6 +31,13 @@ namespace CMPlus
             if (text != null && position >= 0 && text.Length > position + pattern.Length)
                 return (text.Substring(position, pattern.Length) == pattern);
             return false;
+        }
+
+        public static bool IsWhiteSpace(this string text, int index) => char.IsWhiteSpace(text[index]);
+
+        public static bool EndWith(this string text, int pos, string pattern)
+        {
+            return (pos >= pattern.Length && text.Contains(pattern, pos - pattern.Length));
         }
 
         // processing only whitespaces
@@ -120,6 +116,21 @@ namespace CMPlus
         public static int StartLinePositionCharacter(this SyntaxToken token)
             => token.GetLocation().GetLineSpan().StartLinePosition.Character;
 
+        // public static SyntaxToken PrevLineStartToken(this SyntaxToken token)
+        // {
+        //     token.SyntaxTree.Select()
+        //     // => token.GetLocation().GetLineSpan().StartLinePosition.Character;
+        // }
+
+        public static SyntaxToken? GetTokenFromPosition(this SyntaxNode root, int position)
+        {
+            try
+            {
+                return root.FindToken(position, true);
+            }
+            catch { return null; }
+        }
+
         public static IEnumerable<UsingDirectiveSyntax> Sort(this IEnumerable<UsingDirectiveSyntax> source)
         {
             // System.*
@@ -151,6 +162,51 @@ namespace CMPlus
 
         public static SyntaxTrivia? ParentStatementWhitespaceTrivia(this SyntaxToken token)
             => token.ParentStatement()?.GetLeadingTrivia().LastOrDefault(x => x.IsKind(SyntaxKind.WhitespaceTrivia));
+
+        public static bool IsPartOfInterpolationExpression(this SyntaxToken token)
+        {
+            var result = token.Parent;
+            do
+            {
+                if (result.IsKind(SyntaxKind.InterpolatedStringExpression))
+                    return true;
+
+                result = result.Parent;
+            }
+            while (result != null);
+
+            return false;
+        }
+
+        public static bool IsValidIndentCandidateToken(this SyntaxToken token)
+        {
+            if (token.IsStringContentToken())
+            {
+                if (token.IsKind(SyntaxKind.InterpolatedStringStartToken) ||
+                   token.IsKind(SyntaxKind.InterpolatedVerbatimStringStartToken))
+                    return true;
+                else
+                    return false;
+            }
+            else
+            {
+                if (Runtime.Settings.DoNotAlignInterpolation)
+                    return !token.IsPartOfInterpolationExpression();
+                else
+                    return true;
+            }
+        }
+
+        public static bool IsStringContentToken(this SyntaxToken token)
+            => token.IsKind(SyntaxKind.InterpolatedStringToken) ||
+               token.IsKind(SyntaxKind.InterpolatedStringTextToken) ||
+               token.IsKind(SyntaxKind.InterpolatedStringStartToken) ||
+               token.IsKind(SyntaxKind.InterpolatedVerbatimStringStartToken) ||
+               token.IsKind(SyntaxKind.StringLiteralToken);
+
+        public static SyntaxToken GetParentChildToken(this SyntaxToken token, SyntaxKind kind)
+            => token.Parent.ChildTokens()
+                           .FirstOrDefault(x => x.IsKind(kind));
 
         public static SyntaxNode ParentStatement(this SyntaxToken token)
         {

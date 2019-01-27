@@ -6,8 +6,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
     Name="MyToolWindow"
-    d:DesignHeight="400"
-    d:DesignWidth="600"
+    d:DesignHeight="550"
+    d:DesignWidth="1000"
     Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
     Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
     mc:Ignorable="d">
@@ -24,138 +24,168 @@
             <TabItem Header="Settings">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="60" />
-                        <RowDefinition Height="90" />
-                        <RowDefinition />
-                        <RowDefinition Height="100" />
+                        <RowDefinition Height="1.52*" />
+                        <RowDefinition Height="5" />
+                        <RowDefinition Height="1*" />
                     </Grid.RowDefinitions>
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="2*" />
-                            <RowDefinition Height="3*" />
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="70" />
+                            <RowDefinition />
+                            <RowDefinition Height="60" />
                         </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="100" />
-                        </Grid.ColumnDefinitions>
-                        <Border
-                            Grid.RowSpan="2"
-                            Grid.ColumnSpan="2"
-                            HorizontalAlignment="Stretch"
-                            BorderBrush="Gray"
-                            BorderThickness="1" />
-                        <TextBlock Margin="5,0" VerticalAlignment="Center"><Run Text="Command Id:" /></TextBlock>
-                        <TextBox
-                            Grid.Row="1"
-                            Margin="5,0"
-                            VerticalAlignment="Center"
-                            IsReadOnly="True"
-                            Text="Tools.CM+Format">
-                            <TextBox.ToolTip>
-                                <TextBlock><Run Text="Insert command Id value in the" /><LineBreak /><Run Text="&quot;CodeMaid &gt; Options &gt; Reorganizing &gt; ThirdParty &gt; Other Cleaning Commands&quot;" /><LineBreak /><Run Text="to enable CodeMaid integration manually." /></TextBlock>
-                            </TextBox.ToolTip>
-                        </TextBox>
-                        <StackPanel
-                            Grid.ColumnSpan="2"
-                            Margin="5,0"
-                            HorizontalAlignment="Right"
-                            Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center"><Run Text="Status:" /></TextBlock>
-                            <TextBlock
-                                x:Name="status"
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="2*" />
+                                <RowDefinition Height="3*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="100" />
+                            </Grid.ColumnDefinitions>
+                            <Border
+                                Grid.RowSpan="2"
+                                Grid.ColumnSpan="2"
+                                HorizontalAlignment="Stretch"
+                                BorderBrush="Gray"
+                                BorderThickness="1" />
+                            <TextBlock Margin="5,0" VerticalAlignment="Center"><Run Text="Command Id:" /></TextBlock>
+                            <TextBox
+                                Grid.Row="1"
                                 Margin="5,0"
                                 VerticalAlignment="Center"
-                                FontStyle="Italic"><Run Text="Unintegrated" /></TextBlock>
-                        </StackPanel>
-                        <Button
-                            x:Name="integrate"
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Margin="5,0"
-                            VerticalAlignment="Center"
-                            Click="integrate_Click"
-                            Content="Integrate"
-                            ToolTip="Click to enable/disable CodeMaid integration" />
-                    </Grid>
-                    <Grid Grid.Row="1" Margin="0,10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="2*" />
-                            <RowDefinition Height="3*" />
-                            <RowDefinition Height="5" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="100" />
-                        </Grid.ColumnDefinitions>
+                                IsReadOnly="True"
+                                Text="Tools.CM+Format">
+                                <TextBox.ToolTip>
+                                    <TextBlock><Run Text="Insert command Id value in the" /><LineBreak /><Run Text="&quot;CodeMaid &gt; Options &gt; Reorganizing &gt; ThirdParty &gt; Other Cleaning Commands&quot;" /><LineBreak /><Run Text="to enable CodeMaid integration manually." /></TextBlock>
+                                </TextBox.ToolTip>
+                            </TextBox>
+                            <StackPanel
+                                Grid.ColumnSpan="2"
+                                Margin="5,0"
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                                <TextBlock VerticalAlignment="Center"><Run Text="Status:" /></TextBlock>
+                                <TextBlock
+                                    x:Name="status"
+                                    Margin="5,0"
+                                    VerticalAlignment="Center"
+                                    FontStyle="Italic"><Run Text="Unintegrated" /></TextBlock>
+                            </StackPanel>
+                            <Button
+                                x:Name="integrate"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                Click="integrate_Click"
+                                Content="Integrate"
+                                ToolTip="Click to enable/disable CodeMaid integration" />
+                        </Grid>
+                        <Grid Grid.Row="1" Margin="0,10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="2*" />
+                                <RowDefinition Height="3*" />
+                                <RowDefinition Height="5" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="100" />
+                            </Grid.ColumnDefinitions>
+                            <Border
+                                Grid.RowSpan="3"
+                                Grid.ColumnSpan="2"
+                                HorizontalAlignment="Stretch"
+                                BorderBrush="Gray"
+                                BorderThickness="1" />
+                            <TextBlock Margin="5,0" VerticalAlignment="Center">
+                                <Run Text="Directory to batch-process:" /></TextBlock>
+                            <ComboBox
+                                x:Name="dirSelector"
+                                Grid.Row="1"
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                SelectionChanged="ComboBox_SelectionChanged">
+                                <ComboBoxItem Content="&lt;Solution Directory&gt;" />
+                            </ComboBox>
+                            <TextBox
+                                x:Name="selectedDir"
+                                Grid.Row="1"
+                                Margin="7,0,25,0"
+                                VerticalAlignment="Center"
+                                Text="&lt;Solution Directory&gt;">
+                                <TextBox.ToolTip>
+                                    <TextBlock><Run Text="Enter the directory you want to process." /><LineBreak /><Run Text="The all .cs from the sub-directories will also be processed." /></TextBlock>
+                                </TextBox.ToolTip>
+                            </TextBox>
+                            <Button
+                                x:Name="processDir"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                Click="processDir_Click"
+                                Content="Process"
+                                ToolTip="Click to enable/disable CodeMaid integration" />
+                            <ProgressBar
+                                x:Name="progress"
+                                Grid.Row="2"
+                                Grid.ColumnSpan="2"
+                                Visibility="Collapsed" />
+                        </Grid>
+                        <ListBox
+                            x:Name="featureSelector"
+                            Grid.Row="2"
+                            ItemsSource="{Binding Settings}"
+                            SelectionChanged="ListBox_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox VerticalAlignment="Center" IsChecked="{Binding Enabled, Mode=TwoWay}" />
+                                        <Label VerticalAlignment="Center" Content="{Binding}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                         <Border
-                            Grid.RowSpan="3"
-                            Grid.ColumnSpan="2"
+                            Grid.Row="3"
+                            Margin="0,10,0,0"
                             HorizontalAlignment="Stretch"
                             BorderBrush="Gray"
-                            BorderThickness="1" />
-                        <TextBlock Margin="5,0" VerticalAlignment="Center"><Run Text="Directory to batch-process:" /></TextBlock>
-                        <ComboBox
-                            x:Name="dirSelector"
-                            Grid.Row="1"
-                            Margin="5,0"
-                            VerticalAlignment="Center"
-                            SelectionChanged="ComboBox_SelectionChanged">
-                            <ComboBoxItem Content="&lt;Solution Directory&gt;" />
-                        </ComboBox>
-                        <TextBox
-                            x:Name="selectedDir"
-                            Grid.Row="1"
-                            Margin="7,0,25,0"
-                            VerticalAlignment="Center"
-                            IsReadOnly="True"
-                            Text="&lt;Solution Directory&gt;">
-                            <TextBox.ToolTip>
-                                <TextBlock><Run Text="Enter the directory you want to process." /><LineBreak /><Run Text="The all .cs from the sub-directories will also be processed." /></TextBlock>
-                            </TextBox.ToolTip>
-                        </TextBox>
-                        <Button
-                            x:Name="processDir"
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Margin="5,0"
-                            VerticalAlignment="Center"
-                            Click="processDir_Click"
-                            Content="Process"
-                            ToolTip="Click to enable/disable CodeMaid integration" />
-                        <ProgressBar
-                            x:Name="progress"
-                            Grid.Row="2"
-                            Grid.ColumnSpan="2"
-                            Visibility="Collapsed" />
+                            BorderThickness="1">
+                            <TextBox
+                                VerticalAlignment="Stretch"
+                                Background="WhiteSmoke"
+                                IsReadOnly="True"
+                                Text="{Binding Description}"
+                                TextWrapping="Wrap"
+                                VerticalScrollBarVisibility="Auto" />
+                        </Border>
                     </Grid>
-                    <ListBox
-                        x:Name="featureSelector"
-                        Grid.Row="2"
-                        ItemsSource="{Binding Settings}"
-                        SelectionChanged="ListBox_SelectionChanged">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding Enabled, Mode=TwoWay}" />
-                                    <Label VerticalAlignment="Center" Content="{Binding}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                    <Border
-                        Grid.Row="3"
-                        Margin="0,10,0,0"
-                        HorizontalAlignment="Stretch"
-                        BorderBrush="Gray"
-                        BorderThickness="1">
-                        <TextBox
-                            VerticalAlignment="Stretch"
-                            Background="WhiteSmoke"
-                            IsReadOnly="True"
-                            Text="{Binding Description}"
-                            TextWrapping="Wrap"
-                            VerticalScrollBarVisibility="Auto" />
-                    </Border>
+                    <GridSplitter
+                        Grid.Row="1"
+                        Height="5"
+                        HorizontalAlignment="Stretch" />
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <ScrollViewer
+                            Margin="5"
+                            HorizontalScrollBarVisibility="Auto"
+                            VerticalScrollBarVisibility="Auto">
+                            <Image Source="{Binding ImageBefore}" Stretch="None" />
+                        </ScrollViewer>
+                        <ScrollViewer
+                            Grid.Column="1"
+                            Margin="5"
+                            HorizontalScrollBarVisibility="Auto"
+                            VerticalScrollBarVisibility="Auto">
+                            <Image Source="{Binding ImageAfter}" Stretch="None" />
+                        </ScrollViewer>
+                    </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Alignment Preview">

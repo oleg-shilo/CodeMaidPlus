@@ -90,6 +90,14 @@ namespace CMPlus
             Instance = new FormatCommand(package, commandService);
         }
 
+        public static SyntaxNode Process(SyntaxNode root)
+        {
+            return root.SortUsings()
+                       .FixBrackets()
+                       .RemoveXmlDocGaps()
+                       .AlignIndents();
+        }
+
         /// <summary>
         /// This function is the callback used to execute the command when the menu item is clicked.
         /// See the constructor to see how the menu item is associated with this function using
@@ -110,9 +118,7 @@ namespace CMPlus
 
                 if (document != null && document.TryGetSyntaxRoot(out SyntaxNode root))
                 {
-                    root = root.SortUsings()
-                               .RemoveXmlDocGaps()
-                               .AlignIndents();
+                    root = Process(root);
 
                     document = document.WithSyntaxRoot(root);
 
