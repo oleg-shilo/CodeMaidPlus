@@ -84,6 +84,27 @@ namespace CMPlus.Tests
         }
 
         [Fact]
+        public void Should_Compensate_ForDots()
+        {
+            var code =
+@"
+dirItem.AddElement(
+        new XElement(""Component"",
+            new XAttribute(""Id?"", compId),
+            new XAttribute(""Guid"", WixGuid.NewGuid(compId))));
+"
+
+.GetSyntaxRoot();
+
+            var processedCode = code.AlignIndents((i, x) => Debug.WriteLine(x))
+                                    .ToString()
+                                    .GetLines();
+
+            Assert.Equal("dirItem.AddElement(", processedCode[0]);
+            Assert.Equal("        new XElement(\"Component\",", processedCode[1]);
+        }
+
+        [Fact]
         public void Should_Allow_Args_PartialAlignment()
         {
             var code =
@@ -181,8 +202,8 @@ class Test
 {
     void Test()
     {
-          var resourceConfig = schedulerConfiguration.ResourceConfiguration
-                                ?? new TaipanResourceModelConfiguration();
+        var resourceConfig = schedulerConfiguration.ResourceConfiguration
+                              ?? new TaipanResourceModelConfiguration();
     }
 }
 ".GetSyntaxRoot();

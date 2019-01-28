@@ -79,6 +79,11 @@ namespace CMPlus
             return parent as T;
         }
 
+        public static bool HasCharAt(this string text, char pattern, int pos)
+        {
+            return (pos > 0 && pos < text.Length && text[pos] == pattern);
+        }
+
         public static string PathCombine(this Environment.SpecialFolder folder, params string[] paths)
         {
             var parts = paths.ToList();
@@ -183,7 +188,7 @@ namespace CMPlus
             if (token.IsStringContentToken())
             {
                 if (token.IsKind(SyntaxKind.InterpolatedStringStartToken) ||
-                   token.IsKind(SyntaxKind.InterpolatedVerbatimStringStartToken))
+                    token.IsKind(SyntaxKind.InterpolatedVerbatimStringStartToken))
                     return true;
                 else
                     return false;

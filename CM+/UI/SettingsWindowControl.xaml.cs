@@ -123,7 +123,7 @@ namespace CMPlus
                 };
             }
 
-            dirSelector.SelectedItem = dirSelector.Items[0];
+            dirSelector.SelectedItem = null;
             RefreshStatus();
             RefreshSettings();
 
@@ -297,8 +297,8 @@ namespace CMPlus
                                          .Description;
 
             var image = featureSelector.SelectedItem?
-                                         .CastTo<SettingsItem>()
-                                         .ImageUri;
+                                       .CastTo<SettingsItem>()
+                                           .ImageUri;
 
             // "/CM+;component/Resources/using.{when}.png";
             ImageBefore = image?.Replace("{when}", "before");

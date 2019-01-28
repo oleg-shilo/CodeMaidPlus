@@ -169,8 +169,8 @@ namespace CMPlus
                                 {
                                     if (lookForBestAlignment)
                                         bestIndent = FindBestIndentAlignment(blockAdjustedCurrentIndent,
-                                                                       text.SetIndentLength(blockAdjustedCurrentIndent),
-                                                                       prevNonEmptyLine);
+                                                                             text.SetIndentLength(blockAdjustedCurrentIndent),
+                                                                             prevNonEmptyLine);
                                 }
                             }
                             else
@@ -272,7 +272,7 @@ namespace CMPlus
                 // indentPoints.AddRange(IndentPoints);
 
                 // Being fluent criteria - "starts with dot"
-                // var isFluent = line.TrimStart().StartsWith(".");
+                var startsWithDot = line.TrimStart().StartsWith(".");
                 // var isPrevFluent = prevLine.TrimStart().StartsWith(".");
                 // if (isFluent && !isPrevFluent)
                 //     indentPoints.Remove(prevIndentLength);
@@ -291,6 +291,18 @@ namespace CMPlus
 
                 var pointBefore = pointsBefore.Last();
                 var pointAfter = IndentPoints.ToArray()[pointsBefore.Count()];
+
+                if (prevLine.HasCharAt('.', pointBefore - 1))
+                {
+                    if (startsWithDot)
+                        pointBefore--;
+                }
+
+                if (prevLine.HasCharAt('.', pointAfter - 1))
+                {
+                    if (startsWithDot)
+                        pointAfter--;
+                }
 
                 if ((currentIndent - pointBefore) >= (pointAfter - currentIndent))
                     return pointAfter;
@@ -342,7 +354,7 @@ namespace CMPlus
                     {
                         // capture all de-referencings
                         if (isValid())
-                            indentPoints.Add(i);
+                            indentPoints.Add(i+1);
                     }
                     else if (text[i] == '(')
                     {
@@ -355,7 +367,7 @@ namespace CMPlus
                              text.EndWith(i, "return ") ||
                              text.EndWith(i, ": ") ||
                              (i >= 1 && text.IsWhiteSpace(i - 1) &&
-                                       !text.IsWhiteSpace(i)))
+                                            !text.IsWhiteSpace(i)))
                     {
                         // the position of the first element in the lambs expression
                         if (isValid())
