@@ -77,6 +77,12 @@ Alternatively you can open extension setting dialog and press 'Integrate' button
 
 ![](https://raw.githubusercontent.com/oleg-shilo/CodeMaidPlus/master/images/settings.integrate.png)
 
+## Limitations
+
+- Currently the extension processes only the files that are part of a solution.
+- The indent size is assumed to be 4 spaces. It will be read from the VS settings in the future.
+- The formatting is based on the canonical C# bracket style. If you are using "Egyptian brackets" it will interfere with the extension _Align Indents_ feature.  
+
 ## Conclusion
 
 This solution is an open end effort and it can grow in additional functionality if the need arises. On the other hand, it may be short lived if CodeMaid address its problems natively.

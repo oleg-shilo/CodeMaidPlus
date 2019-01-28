@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.Win32;
-using CMPlus;
-using Xunit;
 using static CMPlus.IndentAligner;
-using AttributeData = Microsoft.CodeAnalysis.AttributeData;
 
 namespace CMPlus.Tests
 {
@@ -18,9 +12,9 @@ namespace CMPlus.Tests
     {
         static void Main()
         {
-            TestAlignment4();
+            // TestAlignment4();
             // TestAlignment();
-            // TestAlignment_();
+            // TestAlignmentDir(@"...");
             // TestFluent();
             // TestGaps();
         }
@@ -179,19 +173,25 @@ var reagentsIdentified = new ReagentsIdentified
                      );
         }
 
-        static void TestAlignment_()
+        static void TestAlignmentDir(string dir)
         {
             printOut = false;
             var utf8WithBom = new System.Text.UTF8Encoding(true);
 
-            var files = Directory.GetFiles("DomainControl", "*.cs", SearchOption.AllDirectories);
+            var files = Directory.GetFiles(dir, "*.cs", SearchOption.AllDirectories);
             var count = 0;
             foreach (var file in files)
             {
                 var code = File.ReadAllText(file);
 
-                var formattedCode = AlignCode(code);
-                // var formattedCode = AlignFluent(code);
+                Runtime.Settings.DoNotAlignInterpolation = true;
+
+                var formattedCode = code.GetSyntaxRoot()
+                                    // .SortUsings()
+                                    .RemoveXmlDocGaps()
+                                    .FixBrackets()
+                                    .AlignIndents()
+                                    .ToString();
 
                 if (code != formattedCode)
                 {

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="CM+.13cde750-c1a1-472b-9772-62754a4946f8" Version="1.0.3" Language="en-US" Publisher="Oleg Shilo" />
+        <Identity Id="CM+.13cde750-c1a1-472b-9772-62754a4946f8" Version="1.1.0" Language="en-US" Publisher="Oleg Shilo" />
         <DisplayName>CM+</DisplayName>
         <Description xml:space="preserve">This simple extension is an attempt to address some shortcomings of rather excellent code formatting extension CodeMaid. </Description>
         <MoreInfo>https://github.com/oleg-shilo/CodeMaidPlus</MoreInfo>

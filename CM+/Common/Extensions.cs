@@ -35,7 +35,7 @@ namespace CMPlus
 
         public static bool IsWhiteSpace(this string text, int index) => char.IsWhiteSpace(text[index]);
 
-        public static bool EndWith(this string text, int pos, string pattern)
+        public static bool EndsWith(this string text, int pos, string pattern)
         {
             return (pos >= pattern.Length && text.Contains(pattern, pos - pattern.Length));
         }

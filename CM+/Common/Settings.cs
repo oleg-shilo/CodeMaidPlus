@@ -52,7 +52,7 @@ namespace CMPlus
         [Description("Fix \"Egyptian brackets\" in cases that are not handled by CodeMaid.")]
         public bool FixBrackets { get; set; } = true;
 
-        [Image("")]
+        [Image("/CM+;component/Resources/interpolation.{when}.png")]
         [Description("Do not process code in the string interpolation expressions.")]
         public bool DoNotAlignInterpolation { get; set; } = true;
 

@@ -40,16 +40,37 @@ namespace CMPlus
                 return new string(text);
             }
 
+            string MergedIndentPointsLine = "";
+
             void UpdateIndentPointsFrom(string line, SyntaxToken lineStartToken)
             {
                 if (IndentPoints.IsEmpty() && line.IsEmpty())
+                {
                     IndentPoints = new[] { 0, singleIndent.Length };
+                }
                 else
+                {
+                    if (MergedIndentPointsLine.IsEmpty())
+                    {
+                        MergedIndentPointsLine = line;
+                    }
+                    else
+                    {
+                        var chars = line.ToCharArray();
+                        for (int i = 0; i < chars.Length; i++)
+                        {
+                            if (char.IsWhiteSpace(chars[i]) && MergedIndentPointsLine.Length > i)
+                                chars[i] = MergedIndentPointsLine[i];
+                        }
+                        MergedIndentPointsLine = new string(chars);
+                    }
+
                     IndentPoints = IndentPoints.Where(x => x < line.GetIndentLength())
                                                .Concat(FindIndentPoints(line, lineStartToken))
                                                .Distinct()
                                                .OrderBy(x => x)
                                                .ToArray();
+                }
             }
 
             void Output(int lineNumber, string line)
@@ -268,16 +289,9 @@ namespace CMPlus
 
             int FindBestIndentAlignment(int currentIndent, string line, string prevLine)
             {
-                // var indentPoints = new List<int>();
-                // indentPoints.AddRange(IndentPoints);
-
-                // Being fluent criteria - "starts with dot"
                 var startsWithDot = line.TrimStart().StartsWith(".");
-                // var isPrevFluent = prevLine.TrimStart().StartsWith(".");
-                // if (isFluent && !isPrevFluent)
-                //     indentPoints.Remove(prevIndentLength);
 
-                if (IndentPoints.IsEmpty() || IndentPoints.Contains(currentIndent))
+                if (IndentPoints.IsEmpty())
                     return currentIndent;
 
                 if (IndentPoints.Last() <= currentIndent)
@@ -292,13 +306,15 @@ namespace CMPlus
                 var pointBefore = pointsBefore.Last();
                 var pointAfter = IndentPoints.ToArray()[pointsBefore.Count()];
 
-                if (prevLine.HasCharAt('.', pointBefore - 1))
+                // if (prevLine.HasCharAt('.', pointBefore - 1))
+                if (MergedIndentPointsLine.HasCharAt('.', pointBefore - 1))
                 {
                     if (startsWithDot)
                         pointBefore--;
                 }
 
-                if (prevLine.HasCharAt('.', pointAfter - 1))
+                // if (prevLine.HasCharAt('.', pointAfter - 1))
+                if (MergedIndentPointsLine.HasCharAt('.', pointAfter - 1))
                 {
                     if (startsWithDot)
                         pointAfter--;
@@ -354,7 +370,7 @@ namespace CMPlus
                     {
                         // capture all de-referencings
                         if (isValid())
-                            indentPoints.Add(i+1);
+                            indentPoints.Add(i + 1);
                     }
                     else if (text[i] == '(')
                     {
@@ -362,16 +378,24 @@ namespace CMPlus
                         if (isValid())
                             indentPoints.Add(i + 1);
                     }
-                    else if (text.EndWith(i, "=> ") ||
-                             text.EndWith(i, "= ") ||
-                             text.EndWith(i, "return ") ||
-                             text.EndWith(i, ": ") ||
+                    else if (text.EndsWith(i, "$\""))
+                    {
+                        indentPoints.Add(i - 1);
+                    }
+                    else if (text.EndsWith(i, "=> ") ||
+                             text.EndsWith(i, "= ") ||
+                             text.EndsWith(i, "return ") ||
+                             text.EndsWith(i, ": ") ||
                              (i >= 1 && text.IsWhiteSpace(i - 1) &&
-                                            !text.IsWhiteSpace(i)))
+                                            !text.IsWhiteSpace(i) &&
+                                            text[i] != '='))
                     {
                         // the position of the first element in the lambs expression
                         if (isValid())
+                        {
                             indentPoints.Add(i);
+                            indentPoints.Add(i + singleIndent.Length); // remove if becomes too noisy
+                        }
                     }
                     if (text.EndsWith("("))
                     {

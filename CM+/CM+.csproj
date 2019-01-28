@@ -113,6 +113,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Resources\interpolation.after.png" />
+    <Resource Include="Resources\interpolation.before.png" />
     <Content Include="Resources\SettingsWindowCommand.png" />
     <VSCTCompile Include="vsix\FormatCommandPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>

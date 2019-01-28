@@ -127,6 +127,38 @@ class Test
         }
 
         [Fact]
+        public void Should_Favour_Fluent()
+        {
+            // return new ActionBuilder()
+            //        .WithId(id)
+            //         .WithDuration(duration.test
+            //                               .Length)
+            //         .Build()
+            //     .WithStartTime(startTime);
+
+            var code =
+@"
+class Test
+{
+    private OptimiserAction CreateAction(uint id, TimeSpan startTime, TimeSpan duration)
+    {
+        return new ActionBuilder()
+               .WithId(id)
+                .WithDuration(duration)
+                .Build()
+            .WithStartTime(startTime);
+    }
+}".GetSyntaxRoot();
+
+            var processedCode = code.AlignIndents((i, x) => Debug.WriteLine(x))
+                                    .ToString()
+                                    .GetLines();
+
+            Assert.Equal("               .WithId(id)", processedCode[5]);
+            Assert.Equal("               .WithDuration(duration)", processedCode[6]);
+        }
+
+        [Fact]
         public void Ignore_Intepolation()
         {
             var code =
