@@ -1,5 +1,10 @@
 # CodeMaid+
 
+<sub>_GitHub: https://github.com/oleg-shilo/CodeMaidPlus<br>_</sub>
+<sub>_Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=OlegShilo.CodeMaidPlus_</sub>
+
+----
+
 This simple extension (see [GitHub home page](https://github.com/oleg-shilo/CodeMaidPlus)) is an attempt to address some shortcomings of rather excellent code formatting extension [CodeMaid](http://www.codemaid.net/). The best outcome is achieved when it is used (integrated) with CodeMaid even though it can be used on its own.
 
 ## Problem
@@ -80,8 +85,11 @@ Alternatively you can open extension setting dialog and press 'Integrate' button
 ## Limitations
 
 - Currently the extension processes only the files that are part of a solution.
-- The indent size is assumed to be 4 spaces. It will be read from the VS settings in the future.
 - The formatting is based on the canonical C# bracket style. If you are using "Egyptian brackets" it will interfere with the extension _Align Indents_ feature.  
+- The indent size is assumed to be 4 spaces.<br>
+  _It will be read from the VS settings in the future._
+- May not be invoked automatically on-save for very large files.<br>
+  _This is actually a CodeMaid defect when it fails to invoke third-party extensions on-save. You will need to invoke the extension manually in such cases._
 
 ## Conclusion
 
