@@ -1,4 +1,15 @@
-﻿using System;
+﻿#region Licence...
+
+/*
+The MIT License (MIT)
+
+Copyright (c) 2016 Oleg Shilo
+
+*/
+
+#endregion Licence...
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
@@ -19,6 +30,11 @@ namespace CMPlus
 {
     static public class UsingsSorter
     {
+        /// <summary>
+        /// Sorts the usings.
+        /// </summary>
+        /// <param name="root">The root.</param>
+        /// <returns></returns>
         public static SyntaxNode SortUsings(this SyntaxNode root)
         {
             if (Runtime.Settings.SortUsings)
@@ -27,12 +43,24 @@ namespace CMPlus
                                      .Where(node => node.IsKind(SyntaxKind.CompilationUnit) ||
                                                     node.IsKind(SyntaxKind.NamespaceDeclaration));
 
-                root = root.ReplaceNodes(usingNodes, (originalNode, newNode) =>
-                                                      {
-                                                          var rawUsings = originalNode.GetUsings();
-                                                          var orderedUsings = rawUsings.Sort();
-                                                          return newNode.WithUsings(orderedUsings);
-                                                      });
+                if (usingNodes.Any())
+                    root = root.ReplaceNodes(usingNodes,
+                               (originalNode, newNode) =>
+                               {
+                                   var rawUsings = originalNode.GetUsings().ToArray();
+
+                                   var topUsingTrivia = rawUsings[0].GetLeadingTrivia();
+                                   rawUsings[0] = rawUsings[0].WithoutLeadingTrivia();
+
+                                   var orderedUsings = rawUsings.Sort().ToArray();
+
+                                   if (orderedUsings.Any())
+                                   {
+                                       orderedUsings[0] = orderedUsings[0].WithLeadingTrivia(topUsingTrivia);
+                                   }
+
+                                   return newNode.WithUsings(orderedUsings);
+                               });
             }
 
             return root;

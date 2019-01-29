@@ -82,5 +82,37 @@ class Test
             Assert.Equal("using Microsoft.CodeAnalysis.CSharp;", processedCode[2]);
             Assert.Equal("using Xunit;", processedCode[3]);
         }
+
+        [Fact]
+        public void ShouldNot_Move_TopUsingTrivia()
+        {
+            var code =
+@"
+
+#region Licence...
+
+/*
+The MIT License (MIT)
+*/
+
+#endregion Licence...
+
+using Xunit;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp;
+using System.Linq;
+using System;
+
+class Test
+{
+}";
+            var processedCode = code.GetSyntaxRoot()
+                                    .SortUsings()
+                                    .ToFullString()
+                                    .GetLines();
+
+            Assert.Equal("The MIT License (MIT)", processedCode[5]);
+            Assert.Equal("using Xunit;", processedCode[13]);
+        }
     }
 }
