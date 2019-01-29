@@ -13,8 +13,11 @@ namespace CMPlus
         public static SyntaxNode AlignIndents(this SyntaxNode root, Action<int, string> onLineVisualized = null)
         {
             if (Runtime.Settings.AlignIndents)
-                root = new Aligner(onLineVisualized).AlignIndents(root);
-
+                try
+                {
+                    root = new Aligner(onLineVisualized).AlignIndents(root);
+                }
+                catch { }
             return root;
         }
 

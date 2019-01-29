@@ -13,56 +13,58 @@ namespace CMPlus
         public static SyntaxNode FixBrackets(this SyntaxNode root)
         {
             if (Runtime.Settings.FixBrackets)
-            {
-                var indents = new Dictionary<SyntaxToken, int>();
-
-                // do not mess with the structured interpolations (the love child of ReSharper).
-                // They are already messed up enough:
-                //    var message = $@"Error: {1.ToString().
-                //        Length}
-                //    ";
-
-                var openBraces = root.DescendantTokens()
-                                     .Where(x => !x.HasLeadingTrivia &&
-                                                  x.IsKind(SyntaxKind.OpenBraceToken))
-                                     .Where(openBrace =>
-                                     {
-                                         var matchingCloseBrace = openBrace.GetParentChildToken(SyntaxKind.CloseBraceToken);
-                                         if (!matchingCloseBrace.IsMissing)
-                                         {
-                                             return matchingCloseBrace.GetLineNumber() != openBrace.GetLineNumber();
-                                         }
-                                         return false;
-                                     });
-
-                if (Runtime.Settings.DoNotAlignInterpolation)
-                    openBraces = openBraces.Where(x => !x.Parent.IsKind(SyntaxKind.Interpolation));
-
-                var lines = root.GetText().Lines;
-
-                foreach (SyntaxToken braceToken in openBraces)
+                try
                 {
-                    var p = braceToken.Parent;
-                    var text = lines[braceToken.GetLineNumber()].ToString();
+                    var indents = new Dictionary<SyntaxToken, int>();
 
-                    if (text.HasText() && text.Trim() != "{")
-                        indents[braceToken] = text.GetIndentLength();
-                }
+                    // do not mess with the structured interpolations (the love child of ReSharper).
+                    // They are already messed up enough:
+                    //    var message = $@"Error: {1.ToString().
+                    //        Length}
+                    //    ";
 
-                // must be done in a single hit in order to avoid invalidating tokens during the run
-                root = root.ReplaceTokens(indents.Keys,
-                    (oldToken, newToken) =>
+                    var openBraces = root.DescendantTokens()
+                                         .Where(x => !x.HasLeadingTrivia &&
+                                                      x.IsKind(SyntaxKind.OpenBraceToken))
+                                         .Where(openBrace =>
+                                         {
+                                             var matchingCloseBrace = openBrace.GetParentChildToken(SyntaxKind.CloseBraceToken);
+                                             if (!matchingCloseBrace.IsMissing)
+                                             {
+                                                 return matchingCloseBrace.GetLineNumber() != openBrace.GetLineNumber();
+                                             }
+                                             return false;
+                                         });
+
+                    if (Runtime.Settings.DoNotAlignInterpolation)
+                        openBraces = openBraces.Where(x => !x.Parent.IsKind(SyntaxKind.Interpolation));
+
+                    var lines = root.GetText().Lines;
+
+                    foreach (SyntaxToken braceToken in openBraces)
                     {
-                        var indent = new string(' ', indents[oldToken]);
+                        var p = braceToken.Parent;
+                        var text = lines[braceToken.GetLineNumber()].ToString();
 
-                        return oldToken
-                            .WithoutTrivia()
-                            .WithLeadingTrivia(SyntaxFactory.CarriageReturnLineFeed,
-                                               SyntaxFactory.Whitespace(indent))
-                            .WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed);
-                    });
-                return root;
-            }
+                        if (text.HasText() && text.Trim() != "{")
+                            indents[braceToken] = text.GetIndentLength();
+                    }
+
+                    // must be done in a single hit in order to avoid invalidating tokens during the run
+                    root = root.ReplaceTokens(indents.Keys,
+                        (oldToken, newToken) =>
+                        {
+                            var indent = new string(' ', indents[oldToken]);
+
+                            return oldToken
+                                .WithoutTrivia()
+                                .WithLeadingTrivia(SyntaxFactory.CarriageReturnLineFeed,
+                                                   SyntaxFactory.Whitespace(indent))
+                                .WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed);
+                        });
+                    return root;
+                }
+                catch { }
 
             return root;
         }

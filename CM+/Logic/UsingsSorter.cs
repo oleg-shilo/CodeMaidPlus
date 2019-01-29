@@ -38,31 +38,31 @@ namespace CMPlus
         public static SyntaxNode SortUsings(this SyntaxNode root)
         {
             if (Runtime.Settings.SortUsings)
-            {
-                var usingNodes = root.DescendantNodesAndSelf(node => !node.IsKind(SyntaxKind.ClassDeclaration))
-                                     .Where(node => node.IsKind(SyntaxKind.CompilationUnit) ||
-                                                    node.IsKind(SyntaxKind.NamespaceDeclaration));
+                try
+                {
+                    var usingNodes = root.DescendantNodesAndSelf(node => !node.IsKind(SyntaxKind.ClassDeclaration))
+                                         .Where(node => node.IsKind(SyntaxKind.CompilationUnit) ||
+                                                        node.IsKind(SyntaxKind.NamespaceDeclaration));
 
-                if (usingNodes.Any())
-                    root = root.ReplaceNodes(usingNodes,
-                               (originalNode, newNode) =>
-                               {
-                                   var rawUsings = originalNode.GetUsings().ToArray();
-
-                                   var topUsingTrivia = rawUsings[0].GetLeadingTrivia();
-                                   rawUsings[0] = rawUsings[0].WithoutLeadingTrivia();
-
-                                   var orderedUsings = rawUsings.Sort().ToArray();
-
-                                   if (orderedUsings.Any())
+                    if (usingNodes.Any())
+                        root = root.ReplaceNodes(usingNodes,
+                                   (originalNode, newNode) =>
                                    {
-                                       orderedUsings[0] = orderedUsings[0].WithLeadingTrivia(topUsingTrivia);
-                                   }
+                                       var rawUsings = originalNode.GetUsings().ToArray();
+                                       if (rawUsings.Any())
+                                       {
+                                           var topUsingTrivia = rawUsings[0].GetLeadingTrivia();
+                                           rawUsings[0] = rawUsings[0].WithoutLeadingTrivia();
 
-                                   return newNode.WithUsings(orderedUsings);
-                               });
-            }
+                                           var orderedUsings = rawUsings.Sort().ToArray();
 
+                                           orderedUsings[0] = orderedUsings[0].WithLeadingTrivia(topUsingTrivia);
+                                           return newNode.WithUsings(orderedUsings);
+                                       }
+                                       return originalNode;
+                                   });
+                }
+                catch { }
             return root;
         }
     }
