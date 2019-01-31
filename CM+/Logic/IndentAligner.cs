@@ -209,11 +209,16 @@ namespace CMPlus
                         {
                             var node = startToken.Parent;
                             var blockLines = node.ChildNodes()
-                                                 .Select(x => new
+                                                 .Select(x =>
                                                  {
-                                                     index = x.GetStartLineNumber(),
-                                                     text = lines[x.GetStartLineNumber()].ToString(),
-                                                     indent = lines[x.GetStartLineNumber()].ToString().GetIndentLength()
+                                                     var index = x.GetStartLineNumber();
+                                                     var txt = lines[index].ToString();
+                                                     return new
+                                                     {
+                                                         index,
+                                                         text = txt,
+                                                         indent = txt.GetIndentLength()
+                                                     };
                                                  });
 
                             if (blockLines.Any()) // it can be empty block like in empty try..catch statement

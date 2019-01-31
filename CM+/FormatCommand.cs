@@ -124,13 +124,30 @@ namespace CMPlus
 
                     Global.Workspace.TryApplyChanges(document.Project.Solution);
                 }
+                Global.SetStatusMessage("CM+ formatting completed...");
             }
             catch (Exception exception)
             {
 #if DEBUG
                 MessageBox.Show(exception.ToString(), "CM+");
 #endif
+                var StatusBar = Package.GetGlobalService(typeof(IVsStatusbar)) as IVsStatusbar;
+
+                Global.SetStatusMessage($"CM+ error: {exception.Message}");
             }
+
+            Task.Run(() =>
+            {
+                Thread.Sleep(1000);
+                Microsoft.VisualStudio.Shell.ThreadHelper.Generic.BeginInvoke(() =>
+                {
+                    try
+                    {
+                        Global.SetStatusMessage(null);
+                    }
+                    catch { }
+                });
+            });
         }
     }
 }

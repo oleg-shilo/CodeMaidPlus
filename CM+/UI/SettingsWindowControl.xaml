@@ -246,6 +246,7 @@
                 Click="help_Click"
                 Content="Help"
                 ToolTip="Visit CodeMaid+ website" />
+            <TextBlock HorizontalAlignment="Center" Text="{Binding Version}"></TextBlock>
         </StackPanel>
     </Grid>
 </UserControl>

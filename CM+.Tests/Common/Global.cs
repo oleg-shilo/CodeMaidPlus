@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -12,6 +13,17 @@ namespace CMPlus.Tests
     {
         static void Main()
         {
+            var sw = new Stopwatch();
+
+            var file = @"..\..\..\..\..\WixSharp\Source\src\WixSharp\Compiler.cs";
+
+            sw.Start();
+            var formattedText = File.ReadAllText(file)
+                                .GetSyntaxRoot()
+                                .AlignIndents()
+                                .ToFullString();
+
+            Console.WriteLine(sw.Elapsed);
             // TestAlignment4();
             // TestAlignment();
             // TestAlignmentDir(@"...");

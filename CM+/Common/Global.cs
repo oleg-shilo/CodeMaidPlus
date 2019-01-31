@@ -1,26 +1,26 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Windows;
+using System.Windows.Media;
+using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.VisualStudio;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
-using System.Threading;
 using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.OLE.Interop;
-using Solution = Microsoft.CodeAnalysis.Solution;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
-using Document = Microsoft.CodeAnalysis.Document;
-using DteDocument = EnvDTE.Document;
 using Task = System.Threading.Tasks.Task;
-using System.Windows;
-using System.Windows.Media;
-using System.IO;
-using System.Xml.Linq;
+using Document = Microsoft.CodeAnalysis.Document;
+using Solution = Microsoft.CodeAnalysis.Solution;
+using DteDocument = EnvDTE.Document;
 
 namespace CMPlus
 {
@@ -36,6 +36,19 @@ namespace CMPlus
             ThreadHelper.ThrowIfNotOnUIThread();
             dynamic dte = GetService<EnvDTE.DTE>();
             return (DteDocument)dte.ActiveDocument;
+        }
+
+        static IVsStatusbar Statusbar;
+
+        internal static void SetStatusMessage(string message)
+        {
+            if (Statusbar == null)
+            {
+                Statusbar = GetService<IVsStatusbar>();
+                // StatusBar = Package.GetGlobalService(typeof(IVsStatusbar)) as IVsStatusbar;
+            }
+
+            Statusbar.SetText(message);
         }
 
         public static Document GetActiveDocument()

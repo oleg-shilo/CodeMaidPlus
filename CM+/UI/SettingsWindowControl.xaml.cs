@@ -91,6 +91,8 @@ namespace CMPlus
             set => SetValue(ImageBeforeProperty, value);
         }
 
+        public string Version { get; set; } = "v" + typeof(SettingsWindowControl).Assembly.GetName().Version;
+
         public static DependencyProperty ImageAfterProperty =
             DependencyProperty.Register(nameof(ImageAfter), typeof(string), typeof(SettingsWindowControl));
 
