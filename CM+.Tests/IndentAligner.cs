@@ -247,5 +247,32 @@ class Test
             Assert.Equal("        var resourceConfig = schedulerConfiguration.ResourceConfiguration", processedCode[4]);
             Assert.Equal("                             ?? new TaipanResourceModelConfiguration();", processedCode[5]);
         }
+
+        [Fact]
+        public void Should_Respect_AnonymousTypeBrackets()
+        {
+            // however VS native formatting will break anonymous type indent
+            var code =
+                @"
+class Test
+{
+    void Test(string text)
+    {
+        var test = text.Select(x => new
+                                    {
+                                        Hash = x.GetHashCode(),
+                                        View = x.ToString()
+                                    });
+    }
+}
+".GetSyntaxRoot();
+
+            var processedCode = code.AlignIndents()
+                                    .ToString()
+                                    .GetLines();
+
+            Assert.Equal("        var test = text.Select(x => new", processedCode[4]);
+            Assert.Equal("                                    {", processedCode[5]);
+        }
     }
 }
