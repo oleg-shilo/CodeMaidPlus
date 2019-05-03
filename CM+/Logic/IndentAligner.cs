@@ -21,9 +21,9 @@ namespace CMPlus
             return root;
         }
 
-        class Aligner
+        internal class Aligner
         {
-            static string singleIndent = "    ";
+            public static string singleIndent = "    ";
             Action<int, string> onLineVisualized;
             IEnumerable<int> IndentPoints = new List<int>();
 
@@ -252,7 +252,7 @@ namespace CMPlus
 
                         if (currentIndent != bestIndent)
                         {
-                            var newItemIndent = new string(' ', bestIndent);
+                            var newItemIndent = ' '.Multiply(bestIndent);
 
                             prevNonEmptyLine = newItemIndent + text.TrimStart();
                             prevStartToken = startToken;

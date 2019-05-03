@@ -65,6 +65,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="IndentAligner.cs" />
+    <Compile Include="LinesTrimmer.cs" />
     <Compile Include="TestBed.cs" />
     <Compile Include="SortUsings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

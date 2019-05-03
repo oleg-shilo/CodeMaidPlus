@@ -44,6 +44,15 @@ namespace CMPlus
         [Description("Remove XML Documentation block trailing blank line.")]
         public bool RemoveXmlDocGaps { get; set; } = true;
 
+        // [Image("/CM+;component/Resources/doc.{when}.png")]
+        [Description("Trims code lines that exceed line length limit (within specified tolerance).")]
+        public string TrimmLinesData { get; set; } = "120:20";
+
+        public bool TrimmLines { get => TrimmLinesData.Any(); }
+
+        internal int TrimmLinesLimit { get => int.Parse(TrimmLinesData.Split(':').First()); }
+        internal int TrimmLinesTolerance { get => int.Parse(TrimmLinesData.Split(':').Last()); }
+
         [Image("/CM+;component/Resources/indent-1.{when}.png")]
         [Description("Align indents so the nearest logical anchor.")]
         public bool AlignIndents { get; set; } = true;

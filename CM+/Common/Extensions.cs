@@ -115,11 +115,79 @@ namespace CMPlus
         public static int GetLineNumber(this SyntaxToken token)
             => token.GetLocation().GetLineSpan().StartLinePosition.Line;
 
+        public static int GetLineNumber(this SyntaxNode token)
+            => token.GetLocation().GetLineSpan().StartLinePosition.Line;
+
         public static int GetStartLineNumber(this SyntaxNode node)
             => node.GetLocation().GetLineSpan().StartLinePosition.Line;
 
         public static int StartLinePositionCharacter(this SyntaxToken token)
             => token.GetLocation().GetLineSpan().StartLinePosition.Character;
+
+        public static int EndLinePositionCharacter(this SyntaxToken token)
+            => token.GetLocation().GetLineSpan().EndLinePosition.Character;
+
+        public static int EndLinePositionCharacter(this SyntaxNode token)
+            => token.GetLocation().GetLineSpan().EndLinePosition.Character;
+
+        public static string Join(this IEnumerable<char> chars)
+            => new string(chars.ToArray());
+
+        public static string Multiply(this char @char, int times)
+            => new string(@char, times);
+
+        public static T Last<T>(this IEnumerable<T> items, int offset)
+            => items.Reverse().Skip(offset).Take(1).First();
+
+        public static T LastOrDefault<T>(this IEnumerable<T> items, int offset)
+        {
+            return items.Reverse().Skip(offset).Take(1).FirstOrDefault();
+        }
+
+        public static int IndexOf<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
+        {
+            var index = 0;
+            foreach (var item in source)
+            {
+                if (predicate.Invoke(item))
+                {
+                    return index;
+                }
+                index++;
+            }
+
+            return -1;
+        }
+
+        public static IEnumerable<T> TakeAfter<T>(this IEnumerable<T> items, T item)
+            => items.SkipWhile(x => !x.Equals(item))
+                    .Skip(1);
+
+        public static IEnumerable<SyntaxToken> TokensOfTheSameLine(this SyntaxToken token)
+        {
+            // instead of going through the ALL tokens go only through the tokens from the same parent
+            // and within the same line
+
+            var lineNumber = token.GetLineNumber();
+
+            var tokens = token.SyntaxTree.GetRoot().DescendantTokens()
+                             .Where(x => x.GetLineNumber() == lineNumber)
+                             .ToArray();
+
+            var parent = token.Parent;
+
+            while (parent != null)
+            {
+                parent = parent.Parent;
+                if (parent.GetFirstToken().GetLineNumber() != lineNumber)
+                    break;
+            }
+
+            return parent.DescendantTokens()
+                         .SkipWhile(x => x.GetLineNumber() != lineNumber)
+                         .TakeWhile(x => x.GetLineNumber() == lineNumber)
+                         .ToArray();
+        }
 
         // public static SyntaxToken PrevLineStartToken(this SyntaxToken token)
         // {
@@ -219,6 +287,31 @@ namespace CMPlus
             do
             {
                 if (result is StatementSyntax)
+                    return result;
+                result = result.Parent;
+            }
+            while (result != null);
+
+            return result;
+        }
+
+        public static SyntaxNode BrakeStringExpression(this SyntaxNode expression, int breakLength, string newLineIndent)
+        {
+            var text = expression.ToFullString();
+            var left = text.Substring(0, breakLength);
+            var right = text.Substring(breakLength);
+            var preffix = left.Split('"')[0];
+            var newLine = "\r\n";
+
+            return SyntaxFactory.ParseExpression($"{left}\"{newLine}{newLineIndent}+ {preffix}\"{right}");
+        }
+
+        public static SyntaxNode ParentNode(this SyntaxToken token, Predicate<SyntaxNode> selector)
+        {
+            var result = token.Parent;
+            do
+            {
+                if (selector(result))
                     return result;
                 result = result.Parent;
             }
