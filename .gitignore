@@ -5,3 +5,7 @@
 /packages
 /.vs
 
+/Testpad/bin/Debug
+/Testpad/bin/Release
+/Testpad/obj/Debug
+/Testpad/obj/Release
