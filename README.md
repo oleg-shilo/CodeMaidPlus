@@ -7,6 +7,8 @@
 
 This simple extension (see [GitHub home page](https://github.com/oleg-shilo/CodeMaidPlus)) is an attempt to address some shortcomings of rather excellent code formatting extension [CodeMaid](http://www.codemaid.net/). The best outcome is achieved when it is used (integrated) with CodeMaid even though it can be used on its own.
 
+I hope at some stage this work will become a part of CodeMaid. If you wanter why it's not the case right now read this thread https://github.com/oleg-shilo/CodeMaidPlus/issues/1#event-2608741029
+
 ## Problem
 
 One of the most popular and versatile coding assistance solution, ReSharper, has a fundamental flaw. Its outdated formatting strategy is extremely aggressive and very often stays on the way of being productive. Thus it does not support some modern syntax paradigms nor allow applying styles in a less aggressive way. Basically when it comes to formatting this great product becomes rather stubborn.
