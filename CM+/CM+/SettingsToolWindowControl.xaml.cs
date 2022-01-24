@@ -1,25 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace CMPlus
 {
     /// <summary>
-    /// Interaction logic for SettingsWindowControl.
+    /// Interaction logic for SettingsToolWindowControl.
     /// </summary>
-    public partial class SettingsWindowControl : UserControl, INotifyPropertyChanged
+    public partial class SettingslWindowControl : UserControl, INotifyPropertyChanged
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SettingslWindowControl"/> class.
+        /// </summary>
+        public SettingslWindowControl()
+        {
+            this.InitializeComponent();
+            this.Loaded += SettingsWindowControl_Loaded;
+        }
+
         private object progressBar;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -55,15 +61,6 @@ namespace CMPlus
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SettingsWindowControl"/> class.
-        /// </summary>
-        public SettingsWindowControl()
-        {
-            this.InitializeComponent();
-            this.Loaded += SettingsWindowControl_Loaded;
-        }
-
         private void RefreshSettings()
         {
             this.Settings.Clear();
@@ -83,7 +80,7 @@ namespace CMPlus
         }
 
         public static DependencyProperty ImageBeforeProperty =
-            DependencyProperty.Register(nameof(ImageBefore), typeof(string), typeof(SettingsWindowControl));
+            DependencyProperty.Register(nameof(ImageBefore), typeof(string), typeof(SettingslWindowControl));
 
         public string ImageBefore
         {
@@ -91,10 +88,10 @@ namespace CMPlus
             set => SetValue(ImageBeforeProperty, value);
         }
 
-        public string Version { get; set; } = "v" + typeof(SettingsWindowControl).Assembly.GetName().Version;
+        public string Version { get; set; } = "v" + typeof(SettingslWindowControl).Assembly.GetName().Version;
 
         public static DependencyProperty ImageAfterProperty =
-            DependencyProperty.Register(nameof(ImageAfter), typeof(string), typeof(SettingsWindowControl));
+            DependencyProperty.Register(nameof(ImageAfter), typeof(string), typeof(SettingslWindowControl));
 
         public string ImageAfter
         {

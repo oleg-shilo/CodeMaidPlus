@@ -8,12 +8,8 @@ using System.Windows;
 using System.Windows.Media;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.LanguageServices;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
@@ -21,6 +17,7 @@ using Task = System.Threading.Tasks.Task;
 using Document = Microsoft.CodeAnalysis.Document;
 using Solution = Microsoft.CodeAnalysis.Solution;
 using DteDocument = EnvDTE.Document;
+using Microsoft.VisualStudio.LanguageServices;
 
 namespace CMPlus
 {

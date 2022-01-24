@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition.Hosting;
+﻿using CMPlus;
+using Microsoft.CodeAnalysis;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using System;
 using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
 namespace CMPlus
@@ -33,7 +27,7 @@ namespace CMPlus
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
-        public static readonly Guid CommandSet = new Guid("abf0f633-bc10-424f-acbb-dbe10bca8134");
+        public static readonly Guid CommandSet = new Guid("1f2dc54e-9205-4998-adb7-15afdb16e6d5");
 
         /// <summary>
         /// VS Package that provides this command, not null.
@@ -57,7 +51,7 @@ namespace CMPlus
             commandService.AddCommand(menuItem);
         }
 
-        private void OnBeforeQueryStatus(object sender, EventArgs e)
+        void OnBeforeQueryStatus(object sender, EventArgs e)
         {
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
@@ -69,12 +63,22 @@ namespace CMPlus
         /// <summary>
         /// Gets the instance of the command.
         /// </summary>
-        public static FormatCommand Instance { get; private set; }
+        public static FormatCommand Instance
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Gets the service provider from the owner package.
         /// </summary>
-        private Microsoft.VisualStudio.Shell.IAsyncServiceProvider ServiceProvider => this.package;
+        private Microsoft.VisualStudio.Shell.IAsyncServiceProvider ServiceProvider
+        {
+            get
+            {
+                return this.package;
+            }
+        }
 
         /// <summary>
         /// Initializes the singleton instance of the command.
@@ -82,11 +86,11 @@ namespace CMPlus
         /// <param name="package">Owner package, not null.</param>
         public static async Task InitializeAsync(AsyncPackage package)
         {
-            // Switch to the main thread - the call to AddCommand in FormatCommand's constructor requires
+            // Switch to the main thread - the call to AddCommand in Command1's constructor requires
             // the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
-            OleMenuCommandService commandService = await package.GetServiceAsync((typeof(IMenuCommandService))) as OleMenuCommandService;
+            OleMenuCommandService commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             Instance = new FormatCommand(package, commandService);
         }
 
