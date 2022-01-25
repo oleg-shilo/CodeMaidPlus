@@ -1,9 +1,9 @@
-﻿using Microsoft.VisualStudio.Shell;
-using System;
-using System.Runtime.InteropServices;
-
-namespace CMPlus
+﻿namespace CMPlus
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using Microsoft.VisualStudio.Shell;
+
     /// <summary>
     /// This class implements the tool window exposed by this package and hosts a user control.
     /// </summary>
@@ -15,20 +15,20 @@ namespace CMPlus
     /// implementation of the IVsUIElementPane interface.
     /// </para>
     /// </remarks>
-    [Guid("7728ce8c-fad6-4b58-be41-ee8511de72f9")]
-    public class SettingsToolWindow : ToolWindowPane
+    [Guid("e55efc73-4505-4f06-8026-bb6c3dbbd42a")]
+    public class SettingsWindow : ToolWindowPane
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SettingsToolWindow"/> class.
+        /// Initializes a new instance of the <see cref="SettingsWindow"/> class.
         /// </summary>
-        public SettingsToolWindow() : base(null)
+        public SettingsWindow() : base(null)
         {
-            this.Caption = "SettingsToolWindow";
+            this.Caption = "CM+ Settings";
 
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
-            this.Content = new SettingslWindowControl();
+            this.Content = new SettingsWindowControl();
         }
     }
 }

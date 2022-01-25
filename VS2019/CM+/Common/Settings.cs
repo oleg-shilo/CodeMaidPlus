@@ -23,7 +23,6 @@ using Task = System.Threading.Tasks.Task;
 using Document = Microsoft.CodeAnalysis.Document;
 using Solution = Microsoft.CodeAnalysis.Solution;
 using DteDocument = EnvDTE.Document;
-using CMPlus;
 
 namespace CMPlus
 {

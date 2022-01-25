@@ -1,8 +1,6 @@
-using Newtonsoft.Json;
 using System;
 using System.IO;
-
-// using System.Web.Script.Serialization;
+using System.Web.Script.Serialization;
 
 namespace CMPlus
 {
@@ -34,8 +32,8 @@ namespace CMPlus
                 if (File.Exists(settingsFile))
                 {
                     var json = File.ReadAllText(settingsFile);
-                    return JsonConvert.DeserializeObject<Settings>(json);
-                    //return new JavaScriptSerializer().Deserialize<Settings>(json);
+                    // return JsonConvert.DeserializeObject<Settings>(json);
+                    return new JavaScriptSerializer().Deserialize<Settings>(json);
                 }
             }
             catch { }
@@ -47,8 +45,8 @@ namespace CMPlus
             try
             {
                 settingsFile.GetDidName().EnsureDirExis();
-                File.WriteAllText(settingsFile, JsonConvert.SerializeObject(settings));
-                // File.WriteAllText(settingsFile, new JavaScriptSerializer().Serialize(settings));
+                // File.WriteAllText(settingsFile, JsonConvert.SerializeObject(settings));
+                File.WriteAllText(settingsFile, new JavaScriptSerializer().Serialize(settings));
             }
             catch { }
             return settings;

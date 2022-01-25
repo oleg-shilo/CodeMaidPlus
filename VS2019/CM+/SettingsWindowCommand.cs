@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using System;
+﻿using System;
 using System.ComponentModel.Design;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
 namespace CMPlus
@@ -12,7 +12,7 @@ namespace CMPlus
     /// <summary>
     /// Command handler
     /// </summary>
-    internal sealed class SettingsToolWindowCommand
+    internal sealed class SettingsWindowCommand
     {
         /// <summary>
         /// Command ID.
@@ -22,7 +22,7 @@ namespace CMPlus
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
-        public static readonly Guid CommandSet = new Guid("1f2dc54e-9205-4998-adb7-15afdb16e6d5");
+        public static readonly Guid CommandSet = new Guid("abf0f633-bc10-424f-acbb-dbe10bca8134");
 
         /// <summary>
         /// VS Package that provides this command, not null.
@@ -30,12 +30,12 @@ namespace CMPlus
         private readonly AsyncPackage package;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SettingsToolWindowCommand"/> class.
+        /// Initializes a new instance of the <see cref="SettingsWindowCommand"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
         /// <param name="commandService">Command service to add command to, not null.</param>
-        private SettingsToolWindowCommand(AsyncPackage package, OleMenuCommandService commandService)
+        private SettingsWindowCommand(AsyncPackage package, OleMenuCommandService commandService)
         {
             this.package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
@@ -48,7 +48,7 @@ namespace CMPlus
         /// <summary>
         /// Gets the instance of the command.
         /// </summary>
-        public static SettingsToolWindowCommand Instance
+        public static SettingsWindowCommand Instance
         {
             get;
             private set;
@@ -71,12 +71,12 @@ namespace CMPlus
         /// <param name="package">Owner package, not null.</param>
         public static async Task InitializeAsync(AsyncPackage package)
         {
-            // Switch to the main thread - the call to AddCommand in SettingsToolWindowCommand's constructor requires
+            // Switch to the main thread - the call to AddCommand in SettingsWindowCommand's constructor requires
             // the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
-            OleMenuCommandService commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
-            Instance = new SettingsToolWindowCommand(package, commandService);
+            OleMenuCommandService commandService = await package.GetServiceAsync((typeof(IMenuCommandService))) as OleMenuCommandService;
+            Instance = new SettingsWindowCommand(package, commandService);
         }
 
         /// <summary>
@@ -91,8 +91,8 @@ namespace CMPlus
             // Get the instance number 0 of this tool window. This window is single instance so this instance
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
-            ToolWindowPane window = this.package.FindToolWindow(typeof(SettingsToolWindow), 0, true);
-            if ((null == window) || (null == window.Frame))
+            ToolWindowPane window = this.package.FindToolWindow(typeof(SettingsWindow), 0, true);
+            if (null == window?.Frame)
             {
                 throw new NotSupportedException("Cannot create tool window");
             }
