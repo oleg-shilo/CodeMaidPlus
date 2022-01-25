@@ -97,11 +97,16 @@
     <PackageReference Include="Microsoft.VisualStudio.LanguageServices">
       <Version>4.0.1</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.31902.203" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.32112.339" ExcludeAssets="runtime">
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.Interop">
       <Version>17.0.32112.339</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.5233" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.5234">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <VSCTCompile Include="CM_Package.vsct">
@@ -109,40 +114,40 @@
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="..\..\images\brackets.after.png">
+    <Resource Include="..\images\brackets.after.png">
       <Link>Resources\brackets.after.png</Link>
     </Resource>
-    <Resource Include="..\..\images\brackets.before.png">
+    <Resource Include="..\images\brackets.before.png">
       <Link>Resources\brackets.before.png</Link>
     </Resource>
-    <Content Include="..\..\images\config.png">
+    <Content Include="..\images\config.png">
       <Link>Resources\config.png</Link>
     </Content>
-    <Resource Include="..\..\images\doc.after.png">
+    <Resource Include="..\images\doc.after.png">
       <Link>Resources\doc.after.png</Link>
     </Resource>
-    <Resource Include="..\..\images\doc.before.png">
+    <Resource Include="..\images\doc.before.png">
       <Link>Resources\doc.before.png</Link>
     </Resource>
-    <Resource Include="..\..\images\indent-1.after.png">
+    <Resource Include="..\images\indent-1.after.png">
       <Link>Resources\indent-1.after.png</Link>
     </Resource>
-    <Resource Include="..\..\images\indent-1.before.png">
+    <Resource Include="..\images\indent-1.before.png">
       <Link>Resources\indent-1.before.png</Link>
     </Resource>
-    <Content Include="..\..\images\settings.integrate.png">
+    <Content Include="..\images\settings.integrate.png">
       <Link>Resources\settings.integrate.png</Link>
     </Content>
-    <Resource Include="..\..\images\using.after.png">
+    <Resource Include="..\images\using.after.png">
       <Link>Resources\using.after.png</Link>
     </Resource>
-    <Resource Include="..\..\images\using.before.png">
+    <Resource Include="..\images\using.before.png">
       <Link>Resources\using.before.png</Link>
     </Resource>
-    <Resource Include="..\..\images\interpolation.before.png">
+    <Resource Include="..\images\interpolation.before.png">
       <Link>Resources\interpolation.before.png</Link>
     </Resource>
-    <Resource Include="..\..\images\interpolation.after.png">
+    <Resource Include="..\images\interpolation.after.png">
       <Link>Resources\interpolation.after.png</Link>
     </Resource>
     <Content Include="licence.txt">
